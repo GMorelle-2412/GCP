@@ -1,0 +1,295 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --violet: #9184EE;
+    --violet-dim: #7b6de0;
+    --violet-glow: rgba(145, 132, 238, 0.25);
+    --violet-soft: rgba(145, 132, 238, 0.08);
+    --black: #0a0a0c;
+    --black-mid: #111114;
+    --black-card: #16161a;
+    --white: #f0eeff;
+    --white-dim: rgba(240, 238, 255, 0.55);
+    --border: rgba(145, 132, 238, 0.18);
+}
+
+html,
+body {
+    height: 100%;
+    background-color: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+}
+
+/* Fond animé avec grain */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 60% 40% at 80% 10%, rgba(145, 132, 238, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 50% at 10% 80%, rgba(145, 132, 238, 0.07) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ─── HEADER ─── */
+#head_page {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 2.5rem;
+    min-height: 80px;
+    background: rgba(10, 10, 12, 0.75);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+}
+
+#head_page img {
+    width: 64x;
+    height: 64px;
+    border-radius: 8px;
+    background: var(--violet-soft);
+    border: 1px solid var(--border);
+    object-fit: contain;
+}
+
+#head_page h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--white);
+    flex: 1;
+    background: linear-gradient(110deg, var(--white) 40%, var(--violet));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Boutons header */
+#head_page button {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 0.45rem 1.2rem;
+    transition: all 0.2s ease;
+}
+
+#CetI{
+    margin-bottom: 10px;
+}
+
+#Connection {
+    background: transparent;
+    color: var(--white-dim);
+    border: 1px solid var(--border);
+}
+
+#Connection:hover {
+    background: var(--violet-soft);
+    color: var(--white);
+    border-color: var(--violet);
+}
+
+#Inscription {
+    background: var(--violet);
+    color: #fff;
+    border: 1px solid var(--violet);
+    box-shadow: 0 0 18px var(--violet-glow);
+}
+
+#Inscription:hover {
+    background: var(--violet-dim);
+    box-shadow: 0 0 28px rgba(145, 132, 238, 0.45);
+    transform: translateY(-1px);
+}
+
+/* ─── CONTENU ─── */
+#contenu_page {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 2.5rem;
+}
+
+#contenu_page p{
+    color: white;
+    font-size: 25px;
+    margin-top: clamp(10%, 10vh, 10vh);
+    margin-bottom: clamp(30%, 30vh, 30vh);
+}
+
+/* Bouton Créer un projet */
+#Create_element {
+    display: flex;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 1.6rem;
+    background: var(--black-card);
+    color: var(--violet);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    justify-content: center;
+}
+
+#Create_element::before {
+    content: '+';
+    font-size: 1.1rem;
+    font-weight: 300;
+    line-height: 1;
+}
+
+#Create_element::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--violet-soft);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+#Create_element:hover {
+    border-color: var(--violet);
+    color: var(--white);
+    box-shadow: 0 0 20px var(--violet-glow);
+    transform: translateY(-2px);
+}
+
+#Create_element:hover::after {
+    opacity: 1;
+}
+
+#Create_element:active {
+    transform: translateY(0);
+}
+
+/* ─── OVERLAYS ─── */
+#overlay_inscription,
+#overlay_connection {
+    display: none;
+}
+
+/* ─── MODALS ─── */
+#inscription,
+#connection {
+    background: var(--black-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 2rem 2.5rem;
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    box-shadow: 0 0 40px rgba(145, 132, 238, 0.12);
+    animation: modalIn 0.25s ease;
+}
+
+#inscription p,
+#connection p{
+    margin-bottom: auto;
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: translateY(12px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+#inscription p,
+#connection p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--white-dim);
+    margin-top: 0.5rem;
+}
+
+#inscription input,
+#connection input {
+    width: 100%;
+    background: var(--black-mid);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 0.6rem 1rem;
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#inscription input:focus,
+#connection input:focus {
+    border-color: var(--violet);
+    box-shadow: 0 0 0 3px var(--violet-glow);
+}
+
+#inscription button,
+#connection button {
+    margin-top: 0.75rem;
+    width: 100%;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0.65rem 1.4rem;
+    background: var(--violet);
+    color: #fff;
+    border: 1px solid var(--violet);
+    border-radius: 8px;
+    box-shadow: 0 0 18px var(--violet-glow);
+    transition: all 0.2s ease;
+}
+
+#inscription button:hover,
+#connection button:hover {
+    background: var(--violet-dim);
+    box-shadow: 0 0 28px rgba(145, 132, 238, 0.45);
+    transform: translateY(-1px);
+}
+
+#inscription button:active,
+#connection button:active {
+    transform: translateY(0);
+}

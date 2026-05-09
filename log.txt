@@ -1,0 +1,28 @@
+◇ injected env (5) from .env // tip: ⌘ override existing { override: true }
+Serveur lancé sur http://127.0.0.1:3000
+Erreur connexion MySQL : AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1123:18)
+    at afterConnectMultiple (node:net:1683:7) {
+  code: 'ECONNREFUSED',
+  fatal: true,
+  [errors]: [
+    Error: connect ECONNREFUSED ::1:3306
+        at createConnectionError (node:net:1646:14)
+        at afterConnectMultiple (node:net:1676:16) {
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '::1',
+      port: 3306
+    },
+    Error: connect ECONNREFUSED 127.0.0.1:3306
+        at createConnectionError (node:net:1646:14)
+        at afterConnectMultiple (node:net:1676:16) {
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 3306
+    }
+  ]
+}
