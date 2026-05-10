@@ -52,36 +52,35 @@ app.post("/Inscription", (req, res) => {
 });
 
 //Connection
-app.get('/connection', (req, res) => {
+app.post('/connection', (req, res) => {
 
-    // Récupération des paramètres GET
-    const nom = req.query.input_nom_connection;
-    const mot_de_passe = req.query.input_mot_de_passe_connection;
+    const nom = req.body.input_nom_connection;
+    const mot_de_passe = req.body.input_mot_de_passe_connection;
 
-    // Vérification si les champs existent
     if (!nom || !mot_de_passe) {
-        return res.send('Champs manquants');
+        return res.status(400).json({ message: "Champs manquants" });
     }
 
-    // Requête SQL sécurisée
     const sql = `
-        SELECT * 
+        SELECT id, nom 
         FROM users 
         WHERE nom = ? AND mot_de_passe = ?
     `;
 
-    connection.query(sql, [nom, mot_de_passe], (err, results) => {
+    db.query(sql, [nom, mot_de_passe], (err, results) => {
 
         if (err) {
             console.log(err);
-            return res.send('Erreur SQL');
+            return res.status(500).json({ message: "Erreur SQL" });
         }
 
-        // Vérifie si un utilisateur existe
         if (results.length > 0) {
-            res.send('Connexion réussie');
+            return res.json({
+                message: "Connexion réussie",
+                user: results[0]
+            });
         } else {
-            res.send('Nom ou mot de passe incorrect');
+            return res.status(401).json({ message: "Identifiants incorrects" });
         }
     });
 });

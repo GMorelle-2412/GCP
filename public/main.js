@@ -140,49 +140,43 @@ function connection() {
     /* =======================
        CONNEXION BDD
     ======================= */
-    bouton_validation_connection.addEventListener("click", async () => {
+bouton_validation_connection.addEventListener("click", async () => {
 
+    try {
         const nom_user = input_nom_connection.value;
         const mot_de_passe_user = input_mot_de_passe_connection.value;
 
-        try {
-            const response = await fetch('/connection', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    input_nom_connection: nom_user,
-                    input_mot_de_passe_connection: mot_de_passe_user
-                })
-            });
+        const response = await fetch('/connection', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                input_nom_connection: nom_user,
+                input_mot_de_passe_connection: mot_de_passe_user
+            })
+        });
 
-            // gestion erreur propre backend
-            const data = await response.json().catch(() => null);
+        const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data?.message || "Identifiants invalides");
-            }
-
-            // sécurité null check
-            if (!data || !data.user) {
-                throw new Error("Réponse serveur invalide");
-            }
-
-            localStorage.setItem("IdUsers", data.user.id);
-            localStorage.setItem("Nom_Users", data.user.nom);
-
-            location.reload();
-
-        } catch (error) {
-            console.error(error);
-            alert(error.message);
+        if (!response.ok) {
+            throw new Error(data.message);
         }
-    });
 
-    /* ANNULATION */
-    bouton_annulation_connection.addEventListener("click", () => {
-        overlay_connection.style.display = "none";
-        verification_page_connection = 0;
-    });
+        localStorage.setItem("IdUsers", data.user.id);
+        localStorage.setItem("Nom_Users", data.user.nom);
+
+        location.reload();
+
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
+    }
+});
+
+/* ANNULATION */
+bouton_annulation_connection.addEventListener("click", () => {
+    overlay_connection.style.display = "none";
+    verification_page_connection = 0;
+});
 }
