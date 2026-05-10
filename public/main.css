@@ -98,7 +98,7 @@ body::before {
     transition: all 0.2s ease;
 }
 
-#CetI{
+#CetI {
     margin-bottom: 10px;
 }
 
@@ -138,7 +138,7 @@ body::before {
     padding: 2.5rem;
 }
 
-#contenu_page p{
+#contenu_page p {
     color: white;
     font-size: 25px;
     margin-top: clamp(10%, 10vh, 10vh);
@@ -200,14 +200,16 @@ body::before {
 }
 
 /* ─── OVERLAYS ─── */
+#overlay_Create_element,
 #overlay_inscription,
 #overlay_connection {
     display: none;
 }
 
-/* ─── MODALS ─── */
+/* ─── MODALS PARTAGÉS ─── */
 #inscription,
-#connection {
+#connection,
+#create_element {
     background: var(--black-card);
     border: 1px solid var(--border);
     border-radius: 14px;
@@ -221,13 +223,9 @@ body::before {
     animation: modalIn 0.25s ease;
 }
 
-@keyframes modalIn {
-    from { opacity: 0; transform: translateY(12px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
 #inscription p,
-#connection p {
+#connection p,
+#create_element p {
     font-family: 'DM Sans', sans-serif;
     font-size: 0.82rem;
     font-weight: 500;
@@ -235,10 +233,13 @@ body::before {
     text-transform: uppercase;
     margin-top: 0.5rem;
     margin-bottom: auto;
+    color: var(--white-dim);
 }
 
 #inscription input,
-#connection input {
+#connection input,
+#create_element input,
+#create_element textarea {
     width: 100%;
     background: var(--black-mid);
     border: 1px solid var(--border);
@@ -252,14 +253,24 @@ body::before {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+#create_element textarea {
+    min-height: 100px;
+    resize: none;
+    line-height: 1.5;
+}
+
 #inscription input:focus,
-#connection input:focus {
+#connection input:focus,
+#create_element input:focus,
+#create_element textarea:focus {
     border-color: var(--violet);
     box-shadow: 0 0 0 3px var(--violet-glow);
 }
 
+/* Bouton primaire (violet) — partagé */
 #inscription button,
-#connection button {
+#connection button,
+#create_element button:first-of-type {
     margin-top: 0.75rem;
     width: 100%;
     font-family: 'Syne', sans-serif;
@@ -278,18 +289,43 @@ body::before {
 }
 
 #inscription button:hover,
-#connection button:hover {
+#connection button:hover,
+#create_element button:first-of-type:hover {
     background: var(--violet-dim);
     box-shadow: 0 0 28px rgba(145, 132, 238, 0.45);
     transform: translateY(-1px);
 }
 
 #inscription button:active,
-#connection button:active {
+#connection button:active,
+#create_element button:first-of-type:active {
     transform: translateY(0);
 }
 
-.text_erreur{
+/* Bouton secondaire (annulation) — spécifique à create_element */
+#create_element button:last-of-type {
+    width: 100%;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0.65rem 1.4rem;
+    background: transparent;
+    color: var(--white-dim);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+#create_element button:last-of-type:hover {
+    background: var(--violet-soft);
+    color: var(--white);
+    border-color: var(--violet);
+}
+
+.text_erreur {
     text-align: center;
     color: crimson !important;
 }
