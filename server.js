@@ -52,7 +52,7 @@ app.post("/Inscription", (req, res) => {
 });
 
 //Connection
-app.post('/connection', (req, res) => {
+/*app.post('/connection', (req, res) => {
 
     const nom = req.body.input_nom_connection;
     const mot_de_passe = req.body.input_mot_de_passe_connection;
@@ -83,7 +83,29 @@ app.post('/connection', (req, res) => {
             return res.status(401).json({ message: "Identifiants incorrects" });
         }
     });
+});*/
+
+app.get('/connection', (req, res) => {
+
+    const nom = req.query.nom;
+    const mot_de_passe = req.query.mot_de_passe;
+
+    const sql =
+        "SELECT * FROM users WHERE nom = ? AND mot_de_passe = ?";
+
+    db.query(sql, [nom, mot_de_passe], (err, result) => {
+
+        if (err) {
+            console.log(err);
+            res.status(500).send('Erreur serveur');
+        } else {
+            res.json(result);
+        }
+
+    });
+
 });
+
 
 /* Lancement */
 app.listen(port, () => {

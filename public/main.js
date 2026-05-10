@@ -140,43 +140,40 @@ function connection() {
     /* =======================
        CONNEXION BDD
     ======================= */
-bouton_validation_connection.addEventListener("click", async () => {
+    bouton_validation_connection.addEventListener("click", () => {
 
-    try {
-        const nom_user = input_nom_connection.value;
-        const mot_de_passe_user = input_mot_de_passe_connection.value;
+        const nom_connexion = document.getElementById("input_nom_connection").value;
+        const mot_de_passe_connexion = document.getElementById("input_mot_de_passe_connection").value;
 
-        const response = await fetch('/connection', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                input_nom_connection: nom_user,
-                input_mot_de_passe_connection: mot_de_passe_user
+        fetch("/connection?nom=" + nom_connexion + "&mot_de_passe=" + mot_de_passe_connexion, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+        })
+            .then(res => res.json())
+            .then(data => {
+
+                console.log(data);
+
+                if (data.length > 0) {
+                    overlay_connection.style.display = "none";
+                    verification_page_connection = 0;
+                } else {
+                    const text_connection_erreur = document.createElement("p");
+                    text_connection_erreur.textContent = "Nom ou mot de passe incorrect";
+                    text_connection_erreur.className = "text_erreur";
+                    connection.appendChild(text_connection_erreur);
+                }
+
             })
-        });
+            .catch(error => {
+                console.log(error);
+            });
 
-        const data = await response.json();
+    });
 
-        if (!response.ok) {
-            throw new Error(data.message);
-        }
-
-        localStorage.setItem("IdUsers", data.user.id);
-        localStorage.setItem("Nom_Users", data.user.nom);
-
-        location.reload();
-
-    } catch (error) {
-        console.error(error);
-        alert(error.message);
-    }
-});
-
-/* ANNULATION */
-bouton_annulation_connection.addEventListener("click", () => {
-    overlay_connection.style.display = "none";
-    verification_page_connection = 0;
-});
+    /* ANNULATION */
+    bouton_annulation_connection.addEventListener("click", () => {
+        overlay_connection.style.display = "none";
+        verification_page_connection = 0;
+    });
 }
