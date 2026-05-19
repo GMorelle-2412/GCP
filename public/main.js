@@ -1,7 +1,11 @@
+/*----------Variables----------*/
+
 let verification_page = 0;
 
+/*----------Fonctions----------*/
+
 /*Inscription*/
-function inscription() {
+function Bouton_Inscription() {
     if (verification_page == 1) return;
 
     verification_page = 1;
@@ -85,8 +89,7 @@ function inscription() {
 }
 
 /*Connection*/
-let recup_nom = "Anonyme";
-function connection() {
+function Bouton_Connection() {
     if (verification_page == 1) return;
 
     verification_page = 1;
@@ -156,7 +159,7 @@ function connection() {
                     overlay_connection.style.display = "none";
                     verification_page = 0;
                     localStorage.setItem("id_user", data[0].id); // Stockage de l'id de l'utilisateur dans le localStorage
-
+                    location.reload();
 
                 } else {
                     const text_connection_erreur = document.createElement("p");
@@ -179,49 +182,8 @@ function connection() {
     });
 }
 
-/*Auto_connection*/
-function auto_connection() {
-
-    const nom_user = document.createElement("p");
-    nom_user.id = "nom_user";
-    nom_user.textContent = "Chargement...";
-    document.getElementById("head_page").appendChild(nom_user);
-
-    const id_user = localStorage.getItem("id_user");
-
-    if (!id_user) {
-        nom_user.textContent = "Utilisateur non connecté";
-        return;
-    }
-
-    fetch("/auto_connection?id_user=" + id_user, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-    })
-        .then(res => res.json())
-        .then(data => {
-
-            if (data.length > 0) {
-
-                const recup_nom = data[0].nom;
-
-                console.log("Nom récupéré :", recup_nom);
-
-                nom_user.textContent = recup_nom;
-
-
-            } else {
-                nom_user.textContent = "Utilisateur inconnu";
-            }
-        })
-        .catch(error => {
-            console.log(error);
-            nom_user.textContent = "Erreur";
-        });
-}
-
 /*Créer un élément*/
-function Create_element() {
+function Bouton_Create_Element() {
 
     if (verification_page == 1) return;
 
@@ -349,49 +311,6 @@ function Create_element() {
                 verification_page = 0;
             });
 
-        /*
-        const contenus = document.getElementsByClassName("text_partie_list");
-        const validations = document.getElementsByClassName("partie_list");
-        const id_user = localStorage.getItem("id_user");
- 
-        // 1. Créer la liste
-        for (let i = 0; i < contenus.length; i++) {
-            fetch("/Liste_element", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contenu: contenus[i].value,
-                    validation: validations[i].checked,
-                    id_user: id_user
-                })
-            });
-        }
- 
-        // 2. Récupérer l'id de la liste
-        fetch("/Recup_id_liste?id_user=" + id_user)
-            .then(res => res.json())
-            .then(data => {
- 
-                const id_liste = data[0].id;
- 
-                // 3. Créer l’élément et le lier à la liste
-                const nom = document.getElementById("input_nom_Create_element").value;
-                const description = document.getElementById("textarea_description_Create_element").value;
- 
-                fetch("/Create_element", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        nom: nom,
-                        description: description,
-                        id_liste: id_liste
-                    })
-                });
- 
-                overlay_Create_element.style.display = "none";
-                overlay_inscription.style.display = "none";
-                verification_page = 0;
-            });*/
     });
 
     /*Créer une partie d'une list*/
@@ -414,4 +333,71 @@ function Create_element() {
 
 }
 
+/*Auto_connection*/
+function auto_connection() {
+
+    const nom_user = document.createElement("p");
+    nom_user.id = "nom_user";
+    nom_user.textContent = "Chargement...";
+    document.getElementById("head_page").appendChild(nom_user);
+
+    const id_user = localStorage.getItem("id_user");
+
+    if (!id_user) {
+        nom_user.textContent = "Utilisateur non connecté";
+        return;
+    }
+
+    fetch("/auto_connection?id_user=" + id_user, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    })
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.length > 0) {
+
+                const recup_nom = data[0].nom;
+
+                console.log("Nom récupéré :", recup_nom);
+
+                nom_user.textContent = recup_nom;
+
+                document.getElementById("text_par_defaut").textContent = " ";
+
+
+            } else {
+                nom_user.textContent = "Utilisateur inconnu";
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            nom_user.textContent = "Erreur";
+        });
+}
+
+/*Déconection*/
+function Déconection() {
+
+    const remplacement = document.getElementById("CetI");
+
+    const bouton_déconection = document.createElement("button");
+    bouton_déconection.id = bouton_déconection;
+    bouton_déconection.textContent = "Déconection";
+
+    if (localStorage.getItem("id_user") > 0) {
+
+        remplacement.textContent = "";
+        remplacement.appendChild(bouton_déconection);
+    } 
+
+    bouton_déconection.addEventListener("click", () => {
+        localStorage.removeItem("id_user");
+        location.reload();
+    });
+}
+
+/*----------Main----------*/
 auto_connection();
+
+Déconection();

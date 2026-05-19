@@ -11,24 +11,22 @@
 
 <body>
     <div id="head_page">
-        <img src="image/icone.png" alt="icon">
-
         <h1>GCP</h1>
 
         <div id="CetI">
-            <button id="Connection" onclick="connection()">Connection</button>
-            <button id="Inscription" onclick="inscription()">Inscription</button>
+            <button id="Connection" onclick="Bouton_Connection()">Connection</button>
+            <button id="Inscription" onclick="Bouton_Inscription()">Inscription</button>
         </div>
 
     </div>
 
     <div id="contenu_page">
-        <p>Connectez-vous pour pouvoir créer des éléments</p>
+        <p id="text_par_defaut">Connectez-vous pour pouvoir créer des éléments</p>
 
-        <button id="Create_element" onclick="Create_element()">Créer un élément</button>
+        <button id="Create_element" onclick="Bouton_Create_Element()">Créer un élément</button>
 
-        <div id = "overlay_Create_element">
-            <div id = "create_element"></div>
+        <div id="overlay_Create_element">
+            <div id="create_element"></div>
         </div>
 
         <div id="overlay_inscription">
