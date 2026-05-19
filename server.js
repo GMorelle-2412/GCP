@@ -52,46 +52,12 @@ app.post("/Inscription", (req, res) => {
 });
 
 //Connection
-/*app.post('/connection', (req, res) => {
-
-    const nom = req.body.input_nom_connection;
-    const mot_de_passe = req.body.input_mot_de_passe_connection;
-
-    if (!nom || !mot_de_passe) {
-        return res.status(400).json({ message: "Champs manquants" });
-    }
-
-    const sql = `
-        SELECT id, nom 
-        FROM users 
-        WHERE nom = ? AND mot_de_passe = ?
-    `;
-
-    db.query(sql, [nom, mot_de_passe], (err, results) => {
-
-        if (err) {
-            console.log(err);
-            return res.status(500).json({ message: "Erreur SQL" });
-        }
-
-        if (results.length > 0) {
-            return res.json({
-                message: "Connexion réussie",
-                user: results[0]
-            });
-        } else {
-            return res.status(401).json({ message: "Identifiants incorrects" });
-        }
-    });
-});*/
-
 app.get('/connection', (req, res) => {
 
     const nom = req.query.nom;
     const mot_de_passe = req.query.mot_de_passe;
 
-    const sql =
-        "SELECT * FROM users WHERE nom = ? AND mot_de_passe = ?";
+    const sql = "SELECT id, nom FROM users WHERE nom = ? AND mot_de_passe = ?";
 
     db.query(sql, [nom, mot_de_passe], (err, result) => {
 
@@ -106,6 +72,124 @@ app.get('/connection', (req, res) => {
 
 });
 
+//auto connection
+app.get('/auto_connection', (req, res) => {
+
+    const id_user = req.query.id_user;
+
+    const sql = "SELECT id, nom FROM users WHERE id = ?";
+
+    db.query(sql, [id_user], (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Erreur serveur');
+        } else {
+            res.json(result);
+        }
+    });
+});
+
+//liste
+app.post("/Liste", (req, res) => {
+    const { contenu, validation, id_user } = req.body;
+
+    const sql = "INSERT INTO liste (contenu, validation, id_user) VALUES (?, ?, ?)";
+
+    db.query(sql, [contenu, validation, id_user], (err, result) => {
+        if (err) return res.status(500).json({ error: err });
+        res.json({ insertId: result.insertId });
+    });
+});
+
+//Elément
+app.post("/Element", (req, res) => {
+    const { nom, description, id_liste } = req.body;
+
+    // 1. Créer l’élément
+    const sqlElement = "INSERT INTO element (nom, description) VALUES (?, ?)";
+
+    db.query(sqlElement, [nom, description], (err, result) => {
+        if (err) return res.status(500).json({ error: err });
+        res.json({ insertId: result.insertId });
+    });
+});
+
+//Contenu_liste
+app.post("/Contenu_liste", (req, res) => {
+    const id_element = req.body.id_element;
+    const id_liste = req.body.id_liste;
+
+    const sql = "INSERT INTO contenu_liste (id_element, id_liste) VALUES(?, ?)";
+
+    db.query(sql, [id_element, id_liste], (err, result) => {
+        if (err) {
+            console.error("ERREUR SQL :", err);
+            return res.status(500).json({ error: err });
+        }
+        res.json(result);
+    });
+});
+
+/*
+//liste élément
+app.post("/Liste_element", (req, res) => {
+    const contenu = req.body.contenu;
+    const validation = req.body.validation;
+    const id_user = req.body.id_user;
+
+
+    const sql = "INSERT INTO liste (contenu, validation, id_user) VALUES(?, ?, ?)";
+
+    db.query(sql, [contenu, validation, id_user], (err, result) => {
+        if (err) {
+            console.error("ERREUR SQL :", err);
+            return res.status(500).json({ error: err });
+        }
+        res.json(result);
+    });
+});
+
+//Récup id_liste
+app.get('/Recup_id_liste', (req, res) => {
+    const id_user = req.query.id_user;
+
+    const sql = "SELECT id FROM liste WHERE id_user = ?";
+
+    db.query(sql, [id_user], (err, result) => {
+
+        if (err) {
+            console.log(err);
+            res.status(500).send('Erreur serveur');
+        } else {
+            res.json(result);
+        }
+
+    });
+
+});
+
+//Créer élément
+app.post("/Create_element", (req, res) => {
+    const nom = req.body.nom;
+    const description = req.body.description;
+    const id_liste = req.body.id_liste;
+
+    const sqlElement = "INSERT INTO element (nom, description) VALUES (?, ?)";
+
+    db.query(sqlElement, [nom, description], (err, result) => {
+        if (err) return res.status(500).json({ error: err });
+
+        const id_element = result.insertId;
+
+        const sqlLink = "INSERT INTO contenu_liste (id_element, id_liste) VALUES (?, ?)";
+
+        db.query(sqlLink, [id_element, id_liste], (err2) => {
+            if (err2) return res.status(500).json({ error: err2 });
+
+            res.json({ message: "Élément ajouté et lié à la liste !" });
+        });
+    });
+});*/
 
 /* Lancement */
 app.listen(port, () => {

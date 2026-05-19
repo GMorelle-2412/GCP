@@ -1,10 +1,10 @@
 {
   "name": "gcp",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
@@ -12,6 +12,16 @@
   "dependencies": {
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "ip": "^2.0.1",
     "mysql2": "^3.22.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GMorelle-2412/GCP.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GMorelle-2412/GCP/issues"
+  },
+  "homepage": "https://github.com/GMorelle-2412/GCP#readme",
+  "description": ""
 }

@@ -1,9 +1,10 @@
-/*Inscription*/
-let verification_page_inscription = 0;
-function inscription() {
-    if (verification_page_inscription == 1 || verification_page_connection == 1) return;
+let verification_page = 0;
 
-    verification_page_inscription = 1;
+/*Inscription*/
+function inscription() {
+    if (verification_page == 1) return;
+
+    verification_page = 1;
 
     /*Arrière-plan*/
     //Floutage de l'arrière-plan
@@ -72,23 +73,23 @@ function inscription() {
 
             .then(result => {
                 overlay_inscription.style.display = "none";
-                verification_page_inscription = 0;
+                verification_page = 0;
             })
     });
 
     //Annulation
     bouton_annulation_inscription.addEventListener("click", () => {
         overlay_inscription.style.display = "none";
-        verification_page_inscription = 0;
+        verification_page = 0;
     });
 }
 
 /*Connection*/
-let verification_page_connection = 0;
+let recup_nom = "Anonyme";
 function connection() {
-    if (verification_page_inscription == 1 || verification_page_connection == 1) return;
+    if (verification_page == 1) return;
 
-    verification_page_connection = 1;
+    verification_page = 1;
 
     /* Arrière-plan */
     const overlay_connection = document.getElementById("overlay_connection");
@@ -137,9 +138,6 @@ function connection() {
     bouton_annulation_connection.textContent = "Annulation";
     connection.appendChild(bouton_annulation_connection);
 
-    /* =======================
-       CONNEXION BDD
-    ======================= */
     bouton_validation_connection.addEventListener("click", () => {
 
         const nom_connexion = document.getElementById("input_nom_connection").value;
@@ -156,7 +154,10 @@ function connection() {
 
                 if (data.length > 0) {
                     overlay_connection.style.display = "none";
-                    verification_page_connection = 0;
+                    verification_page = 0;
+                    localStorage.setItem("id_user", data[0].id); // Stockage de l'id de l'utilisateur dans le localStorage
+
+
                 } else {
                     const text_connection_erreur = document.createElement("p");
                     text_connection_erreur.textContent = "Nom ou mot de passe incorrect";
@@ -174,12 +175,57 @@ function connection() {
     /* ANNULATION */
     bouton_annulation_connection.addEventListener("click", () => {
         overlay_connection.style.display = "none";
-        verification_page_connection = 0;
+        verification_page = 0;
     });
 }
 
+/*Auto_connection*/
+function auto_connection() {
+
+    const nom_user = document.createElement("p");
+    nom_user.id = "nom_user";
+    nom_user.textContent = "Chargement...";
+    document.getElementById("head_page").appendChild(nom_user);
+
+    const id_user = localStorage.getItem("id_user");
+
+    if (!id_user) {
+        nom_user.textContent = "Utilisateur non connecté";
+        return;
+    }
+
+    fetch("/auto_connection?id_user=" + id_user, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    })
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.length > 0) {
+
+                const recup_nom = data[0].nom;
+
+                console.log("Nom récupéré :", recup_nom);
+
+                nom_user.textContent = recup_nom;
+
+
+            } else {
+                nom_user.textContent = "Utilisateur inconnu";
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            nom_user.textContent = "Erreur";
+        });
+}
+
 /*Créer un élément*/
-function Create_element(){
+function Create_element() {
+
+    if (verification_page == 1) return;
+
+    verification_page = 1;
 
     const overlay_Create_element = document.getElementById("overlay_Create_element");
 
@@ -206,8 +252,8 @@ function Create_element(){
     input_nom_Create_element.type = "text";
     input_nom_Create_element.id = "input_nom_Create_element";
     Create_element.appendChild(input_nom_Create_element);
-    
-    //description
+
+    //Description
     const text_description_Create_element = document.createElement("p");
     text_description_Create_element.textContent = "Description de l'élément";
     Create_element.appendChild(text_description_Create_element);
@@ -215,83 +261,157 @@ function Create_element(){
     const textarea_description_Create_element = document.createElement("textarea");
     textarea_description_Create_element.id = "textarea_description_Create_element";
     Create_element.appendChild(textarea_description_Create_element);
-    
-    // BOUTON VALIDATION
+
+    //Bouton créer une partie d'une list
+    const bouton_creer_partie_list = document.createElement("button");
+    bouton_creer_partie_list.textContent = "Créer une partie";
+    Create_element.appendChild(bouton_creer_partie_list);
+
+    //Zone de création d'une partie d'une list
+    const zone_creer_partie_list = document.createElement("div");
+    zone_creer_partie_list.id = "zone_creer_partie_list";
+    Create_element.appendChild(zone_creer_partie_list);
+
+    //Bouton validation
     const bouton_validation_Create_element = document.createElement("button");
-    bouton_validation_Create_element.textContent = "Connexion";
+    bouton_validation_Create_element.textContent = "Créer";
     Create_element.appendChild(bouton_validation_Create_element);
 
-    // BOUTON ANNULATION
+    // Bouton annulation
     const bouton_annulation_Create_element = document.createElement("button");
     bouton_annulation_Create_element.textContent = "Annulation";
     Create_element.appendChild(bouton_annulation_Create_element);
-    /*
 
-    // NOM
-    const text_nom_connection = document.createElement("p");
-    text_nom_connection.textContent = "Nom";
-    connection.appendChild(text_nom_connection);
+    /*annulation*/
+    bouton_annulation_Create_element.addEventListener("click", () => {
+        overlay_Create_element.style.display = "none";
+        verification_page = 0;
+    });
 
-    const input_nom_connection = document.createElement("input");
-    input_nom_connection.type = "text";
-    input_nom_connection.id = "input_nom_connection";
-    connection.appendChild(input_nom_connection);
+    /*validation*/
+    bouton_validation_Create_element.addEventListener("click", () => {
 
-    // MOT DE PASSE
-    const text_mot_de_passe_connection = document.createElement("p");
-    text_mot_de_passe_connection.textContent = "Mot de passe";
-    connection.appendChild(text_mot_de_passe_connection);
+        const contenus = document.getElementsByClassName("text_partie_list");
+        const validations = document.getElementsByClassName("partie_list");
+        const id_user = localStorage.getItem("id_user");
 
-    const input_mot_de_passe_connection = document.createElement("input");
-    input_mot_de_passe_connection.type = "password"; // ✔ correction importante
-    input_mot_de_passe_connection.id = "input_mot_de_passe_connection";
-    connection.appendChild(input_mot_de_passe_connection);
+        // Créer l’élément
+        const nom = document.getElementById("input_nom_Create_element").value;
+        const description = document.getElementById("textarea_description_Create_element").value;
 
-    // BOUTON VALIDATION
-    const bouton_validation_connection = document.createElement("button");
-    bouton_validation_connection.textContent = "Connexion";
-    connection.appendChild(bouton_validation_connection);
-
-    // BOUTON ANNULATION
-    const bouton_annulation_connection = document.createElement("button");
-    bouton_annulation_connection.textContent = "Annulation";
-    connection.appendChild(bouton_annulation_connection);
-
-       //CONNEXION BDD
-    bouton_validation_connection.addEventListener("click", () => {
-
-        const nom_connexion = document.getElementById("input_nom_connection").value;
-        const mot_de_passe_connexion = document.getElementById("input_mot_de_passe_connection").value;
-
-        fetch("/connection?nom=" + nom_connexion + "&mot_de_passe=" + mot_de_passe_connexion, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" }
+        fetch("/Element", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                nom: nom,
+                description: description
+            })
         })
             .then(res => res.json())
             .then(data => {
 
-                console.log(data);
+                const id_element = data.insertId;
+                console.log("Élément créé :", id_element);
 
-                if (data.length > 0) {
-                    overlay_connection.style.display = "none";
-                    verification_page_connection = 0;
-                } else {
-                    const text_connection_erreur = document.createElement("p");
-                    text_connection_erreur.textContent = "Nom ou mot de passe incorrect";
-                    text_connection_erreur.className = "text_erreur";
-                    connection.appendChild(text_connection_erreur);
+                //Créer toutes les listes et les lier à l’élément
+                for (let i = 0; i < contenus.length; i++) {
+
+                    fetch("/Liste", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            contenu: contenus[i].value,
+                            validation: validations[i].checked,
+                            id_user: id_user
+                        })
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+
+                            const id_liste = data.insertId;
+                            console.log("Liste créée :", id_liste);
+
+                            // Lier l’élément à la liste
+                            fetch("/Contenu_liste", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    id_element: id_element,
+                                    id_liste: id_liste
+                                })
+                            });
+                        });
                 }
 
-            })
-            .catch(error => {
-                console.log(error);
+                // FIN
+                overlay_Create_element.style.display = "none";
+                overlay_inscription.style.display = "none";
+                verification_page = 0;
             });
 
+        /*
+        const contenus = document.getElementsByClassName("text_partie_list");
+        const validations = document.getElementsByClassName("partie_list");
+        const id_user = localStorage.getItem("id_user");
+ 
+        // 1. Créer la liste
+        for (let i = 0; i < contenus.length; i++) {
+            fetch("/Liste_element", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contenu: contenus[i].value,
+                    validation: validations[i].checked,
+                    id_user: id_user
+                })
+            });
+        }
+ 
+        // 2. Récupérer l'id de la liste
+        fetch("/Recup_id_liste?id_user=" + id_user)
+            .then(res => res.json())
+            .then(data => {
+ 
+                const id_liste = data[0].id;
+ 
+                // 3. Créer l’élément et le lier à la liste
+                const nom = document.getElementById("input_nom_Create_element").value;
+                const description = document.getElementById("textarea_description_Create_element").value;
+ 
+                fetch("/Create_element", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        nom: nom,
+                        description: description,
+                        id_liste: id_liste
+                    })
+                });
+ 
+                overlay_Create_element.style.display = "none";
+                overlay_inscription.style.display = "none";
+                verification_page = 0;
+            });*/
     });
 
-    //ANNULATION 
-    bouton_annulation_connection.addEventListener("click", () => {
-        overlay_connection.style.display = "none";
-        verification_page_connection = 0;
-    });*/
+    /*Créer une partie d'une list*/
+    bouton_creer_partie_list.addEventListener("click", () => {
+        const liste = document.createElement("div");
+        liste.className = "liste";
+        zone_creer_partie_list.appendChild(liste);
+
+        const partie_list = document.createElement("input");
+        partie_list.className = "partie_list";
+        partie_list.type = "checkbox";
+        liste.appendChild(partie_list);
+
+        const text_partie_list = document.createElement("input");
+        text_partie_list.className = "text_partie_list";
+        text_partie_list.type = "text";
+        text_partie_list.placeholder = "Nom de la partie";
+        liste.appendChild(text_partie_list);
+    });
+
 }
+
+auto_connection();
