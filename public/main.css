@@ -96,22 +96,44 @@ body::before {
     transition: all 0.2s ease;
 }
 
-#CetI {
-    margin-bottom: 10px;
+/* ─── ZONE UTILISATEUR (nom + boutons connexion/déconnexion) ─── */
+#user_name {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
+#nom_user {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--white-dim);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+/* ─── BOUTONS HEADER (CetI) ─── */
+#CetI {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+#Bouton_Connection,
 #Connection {
     background: transparent;
     color: var(--white-dim);
     border: 1px solid var(--border);
 }
 
+#Bouton_Connection:hover,
 #Connection:hover {
     background: var(--violet-soft);
     color: var(--white);
     border-color: var(--violet);
 }
 
+#Bouton_Inscription,
 #Inscription {
     background: var(--violet);
     color: #fff;
@@ -119,10 +141,33 @@ body::before {
     box-shadow: 0 0 18px var(--violet-glow);
 }
 
+#Bouton_Inscription:hover,
 #Inscription:hover {
     background: var(--violet-dim);
     box-shadow: 0 0 28px rgba(145, 132, 238, 0.45);
     transform: translateY(-1px);
+}
+
+/* Bouton déconnexion */
+#CetI button {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 0.45rem 1.2rem;
+    transition: all 0.2s ease;
+    background: transparent;
+    color: var(--white-dim);
+    border: 1px solid var(--border);
+}
+
+#CetI button:hover {
+    background: rgba(220, 53, 69, 0.1);
+    color: #ff6b7a;
+    border-color: rgba(220, 53, 69, 0.4);
 }
 
 /* ─── CONTENU ─── */
@@ -134,13 +179,21 @@ body::before {
     justify-content: center;
     flex-wrap: wrap;
     padding: 2.5rem;
+    gap: 1.5rem;
 }
 
-#contenu_page p {
+#contenu_page > p {
     color: white;
     font-size: 25px;
     margin-top: clamp(10%, 10vh, 10vh);
     margin-bottom: clamp(30%, 30vh, 30vh);
+}
+
+#text_par_defaut {
+    color: var(--white-dim);
+    font-size: 1rem;
+    text-align: center;
+    margin: 0 !important;
 }
 
 #Create_element {
@@ -194,6 +247,118 @@ body::before {
 
 #Create_element:active {
     transform: translateY(0);
+}
+
+/* ─── CONTENEUR DES CARDS ─── */
+#contenue {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+}
+
+/* ─── CARD ÉLÉMENT ─── */
+.element {
+    background: var(--black-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+    animation: cardIn 0.3s ease both;
+}
+
+.element:hover {
+    border-color: var(--violet);
+    box-shadow: 0 0 28px var(--violet-glow);
+    transform: translateY(-3px);
+}
+
+@keyframes cardIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.element h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: linear-gradient(110deg, var(--white) 40%, var(--violet));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.element > p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 300;
+    color: var(--white-dim);
+    line-height: 1.6;
+    margin: 0 !important;
+    font-size: 0.88rem !important;
+}
+
+/* ─── ZONE PARTIES (dans la card) ─── */
+.zone_parties {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+}
+
+.zone_parties h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--white-dim);
+    margin-bottom: 0.25rem;
+}
+
+/* ─── LIGNE PARTIE (checkbox + texte dans la card) ─── */
+.ligne_partie {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.65rem;
+    background: var(--black-mid);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    transition: border-color 0.2s;
+}
+
+.ligne_partie:hover {
+    border-color: var(--violet);
+}
+
+.ligne_partie input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    accent-color: var(--violet);
+    cursor: pointer;
+}
+
+.ligne_partie .text_partie_list {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 300;
+    color: var(--white);
+    flex: 1;
+}
+
+/* Partie validée → texte barré et atténué */
+.ligne_partie input[type="checkbox"]:checked + .text_partie_list {
+    text-decoration: line-through;
+    color: var(--white-dim);
 }
 
 /* ─── OVERLAYS ─── */
@@ -314,8 +479,6 @@ body::before {
 }
 
 /* ─── BOUTONS CREATE_ELEMENT ─── */
-
-/* "Créer une partie d'une list" — discret, 1er bouton */
 #create_element button:nth-of-type(1) {
     width: 100%;
     font-family: 'DM Sans', sans-serif;
@@ -339,7 +502,6 @@ body::before {
     color: var(--white);
 }
 
-/* "Créer" — primaire violet, 2e bouton */
 #create_element button:nth-of-type(2) {
     margin-top: 0.5rem;
     width: 100%;
@@ -368,7 +530,6 @@ body::before {
     transform: translateY(0);
 }
 
-/* "Annulation" — tertiaire, 3e bouton */
 #create_element button:nth-of-type(3) {
     width: 100%;
     font-family: 'Syne', sans-serif;
@@ -391,7 +552,7 @@ body::before {
     border-color: var(--violet);
 }
 
-/* ─── ZONE LISTE ─── */
+/* ─── ZONE LISTE (modale création) ─── */
 #zone_creer_partie_list {
     display: flex;
     flex-direction: column;
@@ -411,7 +572,7 @@ body::before {
     border-radius: 4px;
 }
 
-/* ─── ITEMS DE LISTE ─── */
+/* ─── ITEMS DE LISTE (modale création) ─── */
 .liste {
     display: flex;
     flex-direction: row;
@@ -457,5 +618,8 @@ body::before {
 .text_erreur {
     text-align: center;
     color: crimson !important;
-    font-size: 0.82rem;
+    font-size: 0.82rem !important;
+    margin: 0 !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
 }

@@ -130,66 +130,72 @@ app.post("/Contenu_liste", (req, res) => {
     });
 });
 
-/*
-//liste élément
-app.post("/Liste_element", (req, res) => {
-    const contenu = req.body.contenu;
-    const validation = req.body.validation;
-    const id_user = req.body.id_user;
+//Contenue
+app.get('/Contenue', (req, res) => {
 
-
-    const sql = "INSERT INTO liste (contenu, validation, id_user) VALUES(?, ?, ?)";
-
-    db.query(sql, [contenu, validation, id_user], (err, result) => {
-        if (err) {
-            console.error("ERREUR SQL :", err);
-            return res.status(500).json({ error: err });
-        }
-        res.json(result);
-    });
-});
-
-//Récup id_liste
-app.get('/Recup_id_liste', (req, res) => {
     const id_user = req.query.id_user;
 
-    const sql = "SELECT id FROM liste WHERE id_user = ?";
+    const sql = `SELECT * FROM liste WHERE id_user = ?`;
+    const sql_2 = `SELECT * FROM contenu_liste WHERE id_liste = ?`;
+    const sql_3 = `SELECT * FROM element WHERE id = ?`;
 
-    db.query(sql, [id_user], (err, result) => {
+    db.query(sql, [id_user], (err, listes) => {
+        if (err) return res.status(500).send("Erreur serveur");
 
-        if (err) {
-            console.log(err);
-            res.status(500).send('Erreur serveur');
-        } else {
-            res.json(result);
+        if (listes.length === 0) {
+            return res.json([]);
         }
 
-    });
+        let resultFinal = [];
+        let listesTraitees = 0;
 
-});
+        listes.forEach(liste => {
 
-//Créer élément
-app.post("/Create_element", (req, res) => {
-    const nom = req.body.nom;
-    const description = req.body.description;
-    const id_liste = req.body.id_liste;
+            db.query(sql_2, [liste.id], (err, contenu) => {
+                if (err) return res.status(500).send("Erreur serveur");
 
-    const sqlElement = "INSERT INTO element (nom, description) VALUES (?, ?)";
+                if (contenu.length === 0) {
+                    resultFinal.push({
+                        liste: liste,
+                        contenu_liste: [],
+                        elements: []
+                    });
 
-    db.query(sqlElement, [nom, description], (err, result) => {
-        if (err) return res.status(500).json({ error: err });
+                    listesTraitees++;
+                    if (listesTraitees === listes.length) {
+                        res.json(resultFinal);
+                    }
+                    return;
+                }
 
-        const id_element = result.insertId;
+                let elements = [];
+                let count = 0;
 
-        const sqlLink = "INSERT INTO contenu_liste (id_element, id_liste) VALUES (?, ?)";
+                contenu.forEach(item => {
+                    db.query(sql_3, [item.id_element], (err, element) => {
+                        if (err) return res.status(500).send("Erreur serveur");
 
-        db.query(sqlLink, [id_element, id_liste], (err2) => {
-            if (err2) return res.status(500).json({ error: err2 });
+                        elements.push(element[0]);
+                        count++;
 
-            res.json({ message: "Élément ajouté et lié à la liste !" });
+                        if (count === contenu.length) {
+                            resultFinal.push({
+                                liste: liste,
+                                contenu_liste: contenu,
+                                elements: elements
+                            });
+
+                            listesTraitees++;
+                            if (listesTraitees === listes.length) {
+                                res.json(resultFinal);
+                            }
+                        }
+                    });
+                });
+            });
         });
     });
-});*/
+});
 
 /* Lancement */
 app.listen(port, () => {

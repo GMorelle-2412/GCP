@@ -4,7 +4,7 @@ let verification_page = 0;
 
 /*----------Fonctions----------*/
 
-/*Inscription*/
+/*Bouton d'inscription*/
 function Bouton_Inscription() {
     if (verification_page == 1) return;
 
@@ -79,6 +79,9 @@ function Bouton_Inscription() {
                 overlay_inscription.style.display = "none";
                 verification_page = 0;
             })
+
+        //Auto connection après inscription
+        Connection(nom, mot_de_passe);
     });
 
     //Annulation
@@ -88,7 +91,7 @@ function Bouton_Inscription() {
     });
 }
 
-/*Connection*/
+/*Bouton de connection*/
 function Bouton_Connection() {
     if (verification_page == 1) return;
 
@@ -121,7 +124,7 @@ function Bouton_Connection() {
     input_nom_connection.id = "input_nom_connection";
     connection.appendChild(input_nom_connection);
 
-    // MOT DE PASSE
+    //Mot de passe
     const text_mot_de_passe_connection = document.createElement("p");
     text_mot_de_passe_connection.textContent = "Mot de passe";
     connection.appendChild(text_mot_de_passe_connection);
@@ -131,12 +134,12 @@ function Bouton_Connection() {
     input_mot_de_passe_connection.id = "input_mot_de_passe_connection";
     connection.appendChild(input_mot_de_passe_connection);
 
-    // BOUTON VALIDATION
+    //Bouton validation
     const bouton_validation_connection = document.createElement("button");
     bouton_validation_connection.textContent = "Connexion";
     connection.appendChild(bouton_validation_connection);
 
-    // BOUTON ANNULATION
+    //Bouton annulation
     const bouton_annulation_connection = document.createElement("button");
     bouton_annulation_connection.textContent = "Annulation";
     connection.appendChild(bouton_annulation_connection);
@@ -146,32 +149,7 @@ function Bouton_Connection() {
         const nom_connexion = document.getElementById("input_nom_connection").value;
         const mot_de_passe_connexion = document.getElementById("input_mot_de_passe_connection").value;
 
-        fetch("/connection?nom=" + nom_connexion + "&mot_de_passe=" + mot_de_passe_connexion, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" }
-        })
-            .then(res => res.json())
-            .then(data => {
-
-                console.log(data);
-
-                if (data.length > 0) {
-                    overlay_connection.style.display = "none";
-                    verification_page = 0;
-                    localStorage.setItem("id_user", data[0].id); // Stockage de l'id de l'utilisateur dans le localStorage
-                    location.reload();
-
-                } else {
-                    const text_connection_erreur = document.createElement("p");
-                    text_connection_erreur.textContent = "Nom ou mot de passe incorrect";
-                    text_connection_erreur.className = "text_erreur";
-                    connection.appendChild(text_connection_erreur);
-                }
-
-            })
-            .catch(error => {
-                console.log(error);
-            });
+        Connection(nom_connexion, mot_de_passe_connexion);
 
     });
 
@@ -182,7 +160,7 @@ function Bouton_Connection() {
     });
 }
 
-/*Créer un élément*/
+/*Bouton de création d'un élément*/
 function Bouton_Create_Element() {
 
     if (verification_page == 1) return;
@@ -333,19 +311,89 @@ function Bouton_Create_Element() {
 
 }
 
+/*Bouton de déconnection*/
+function Bouton_Déconection() {
+
+    const remplacement = document.getElementById("CetI");
+
+    const bouton_déconection = document.createElement("button");
+    bouton_déconection.id = bouton_déconection;
+    bouton_déconection.textContent = "Déconection";
+
+    if (localStorage.getItem("id_user") > 0) {
+
+        remplacement.textContent = "";
+        remplacement.appendChild(bouton_déconection);
+    }
+
+    bouton_déconection.addEventListener("click", () => {
+        localStorage.removeItem("id_user");
+        location.reload();
+    });
+}
+
+
+/*Connection*/
+function Connection(nom, mot_de_passe) {
+
+    fetch("/connection?nom=" + nom + "&mot_de_passe=" + mot_de_passe, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    })
+        .then(res => res.json())
+        .then(data => {
+
+            console.log(data);
+
+            if (data.length > 0) {
+                overlay_connection.style.display = "none";
+                verification_page = 0;
+                localStorage.setItem("id_user", data[0].id); // Stockage de l'id de l'utilisateur dans le localStorage
+                location.reload();
+
+            } else {
+                const text_connection_erreur = document.createElement("p");
+                text_connection_erreur.textContent = "Nom ou mot de passe incorrect";
+                text_connection_erreur.className = "text_erreur";
+                connection.appendChild(text_connection_erreur);
+            }
+
+        })
+        .catch(error => {
+            console.log(error);
+        });
+
+}
+
 /*Auto_connection*/
-function auto_connection() {
+function Auto_connection() {
 
     const nom_user = document.createElement("p");
     nom_user.id = "nom_user";
     nom_user.textContent = "Chargement...";
-    document.getElementById("head_page").appendChild(nom_user);
+    document.getElementById("user_name").appendChild(nom_user);
 
     const id_user = localStorage.getItem("id_user");
 
     if (!id_user) {
         nom_user.textContent = "Utilisateur non connecté";
+
+        const bouton_connection = document.createElement("button");
+        bouton_connection.id = "Bouton_Connection";
+        bouton_connection.textContent = "Connection";
+        bouton_connection.onclick = Bouton_Connection;
+        document.getElementById("CetI").appendChild(bouton_connection);
+
+        const bouton_inscription = document.createElement("button");
+        bouton_inscription.id = "Bouton_Inscription";
+        bouton_inscription.textContent = "Inscription";
+        bouton_inscription.onclick = Bouton_Inscription;
+        document.getElementById("CetI").appendChild(bouton_inscription);
+
         return;
+
+    } else {
+        Bouton_Déconection();
     }
 
     fetch("/auto_connection?id_user=" + id_user, {
@@ -374,30 +422,115 @@ function auto_connection() {
             console.log(error);
             nom_user.textContent = "Erreur";
         });
-}
 
-/*Déconection*/
-function Déconection() {
+    fetch("/Contenue?id_user=" + id_user, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    })
+        .then(res => res.json())
+        .then(data => {
 
-    const remplacement = document.getElementById("CetI");
+            console.log("Éléments récupérés :", data);
 
-    const bouton_déconection = document.createElement("button");
-    bouton_déconection.id = bouton_déconection;
-    bouton_déconection.textContent = "Déconection";
+            // Création du conteneur principal
+            const div_contenue = document.createElement("div");
+            div_contenue.id = "contenue";
+            document.getElementById("contenu_page").appendChild(div_contenue);
 
-    if (localStorage.getItem("id_user") > 0) {
+            // Si aucune liste
+            if (data.length === 0) {
+                div_contenue.textContent = "Aucune liste trouvée";
+                return;
+            }
 
-        remplacement.textContent = "";
-        remplacement.appendChild(bouton_déconection);
-    } 
+            // Parcours des listes
+            // Regrouper par élément
+            const elementsMap = {};
 
-    bouton_déconection.addEventListener("click", () => {
-        localStorage.removeItem("id_user");
-        location.reload();
-    });
+            data.forEach(item => {
+
+                if (
+                    !item.liste ||
+                    !item.contenu_liste ||
+                    item.contenu_liste.length === 0 ||
+                    !item.elements ||
+                    item.elements.length === 0
+                ) {
+                    return;
+                }
+
+                const element = item.elements[0];
+                const id = element.id;
+
+                if (!elementsMap[id]) {
+                    elementsMap[id] = {
+                        nom: element.nom,
+                        description: element.description,
+                        parties: []
+                    };
+                }
+
+                item.contenu_liste.forEach(partie => {
+                    elementsMap[id].parties.push({
+                        nom: partie.nom || "Partie sans nom",
+                        validation: partie.validation
+                    });
+                });
+            });
+
+            // Maintenant afficher chaque élément unique
+            Object.values(elementsMap).forEach(el => {
+
+                const div_element = document.createElement("div");
+                div_element.className = "element";
+                div_contenue.appendChild(div_element);
+
+                const titre_element = document.createElement("h2");
+                titre_element.textContent = el.nom;
+                div_element.appendChild(titre_element);
+
+                const description_element = document.createElement("p");
+                description_element.textContent = el.description;
+                div_element.appendChild(description_element);
+
+                const zone_parties = document.createElement("div");
+                zone_parties.className = "zone_parties";
+                div_element.appendChild(zone_parties);
+
+                const titre_parties = document.createElement("h3");
+                titre_parties.textContent = "Liste des parties :";
+                zone_parties.appendChild(titre_parties);
+
+                const conteneur_parties = document.createElement("div");
+                conteneur_parties.className = "conteneur_parties";
+                zone_parties.appendChild(conteneur_parties);
+
+                el.parties.forEach(partie => {
+
+                    const bloc_partie = document.createElement("div");
+                    bloc_partie.className = "bloc_partie";
+                    conteneur_parties.appendChild(bloc_partie);
+
+                    const check = document.createElement("input");
+                    check.type = "checkbox";
+                    check.className = "partie_list";
+                    check.checked = partie.validation === "1";
+                    bloc_partie.appendChild(check);
+
+                    const texte = document.createElement("span");
+                    texte.className = "text_partie_list";
+                    texte.textContent = partie.nom;
+                    bloc_partie.appendChild(texte);
+                });
+            });
+
+        })
+        .catch(error => {
+            console.log(error);
+        });
+
+
 }
 
 /*----------Main----------*/
-auto_connection();
-
-Déconection();
+Auto_connection();
