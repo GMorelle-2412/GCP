@@ -423,111 +423,39 @@ function Auto_connection() {
             nom_user.textContent = "Erreur";
         });
 
-    fetch("/Contenue?id_user=" + id_user, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-    })
-        .then(res => res.json())
-        .then(data => {
+    const get = (url) => fetch(url, { method: "GET", headers: { "Content-Type": "application/json" } }).then(res => res.json());
+    const affiches = new Set();
 
-            console.log("Éléments récupérés :", data);
+    //Récupération des listes (id_user -> id_liste)
+    get("/Recup_Liste?id_user=" + id_user)
+        .then(listes => listes.forEach(liste =>
 
-            // Création du conteneur principal
-            const div_contenue = document.createElement("div");
-            div_contenue.id = "contenue";
-            document.getElementById("contenu_page").appendChild(div_contenue);
+            //Comparer avec les liste de contenue (id_liste -> id_element)
+            get("/Recup_contenu_liste?id_liste=" + liste.id)
+                .then(contenus => contenus.forEach(contenu =>
 
-            // Si aucune liste
-            if (data.length === 0) {
-                div_contenue.textContent = "Aucune liste trouvée";
-                return;
-            }
+                    //Comparer avec les éléments
+                    get("/Recup_Element?id_element=" + contenu.id_element)
+                        .then(element => {
+                            if (affiches.has(element[0].id)) return;
+                            affiches.add(element[0].id);
 
-            // Parcours des listes
-            // Regrouper par élément
-            const elementsMap = {};
+                            const div = document.createElement("div");
+                            div.className = "element";
 
-            data.forEach(item => {
+                            const h3 = document.createElement("h3");
+                            h3.textContent = element[0].nom;
 
-                if (
-                    !item.liste ||
-                    !item.contenu_liste ||
-                    item.contenu_liste.length === 0 ||
-                    !item.elements ||
-                    item.elements.length === 0
-                ) {
-                    return;
-                }
+                            const p = document.createElement("p");
+                            p.textContent = element[0].description;
 
-                const element = item.elements[0];
-                const id = element.id;
-
-                if (!elementsMap[id]) {
-                    elementsMap[id] = {
-                        nom: element.nom,
-                        description: element.description,
-                        parties: []
-                    };
-                }
-
-                item.contenu_liste.forEach(partie => {
-                    elementsMap[id].parties.push({
-                        nom: partie.nom || "Partie sans nom",
-                        validation: partie.validation
-                    });
-                });
-            });
-
-            // Maintenant afficher chaque élément unique
-            Object.values(elementsMap).forEach(el => {
-
-                const div_element = document.createElement("div");
-                div_element.className = "element";
-                div_contenue.appendChild(div_element);
-
-                const titre_element = document.createElement("h2");
-                titre_element.textContent = el.nom;
-                div_element.appendChild(titre_element);
-
-                const description_element = document.createElement("p");
-                description_element.textContent = el.description;
-                div_element.appendChild(description_element);
-
-                const zone_parties = document.createElement("div");
-                zone_parties.className = "zone_parties";
-                div_element.appendChild(zone_parties);
-
-                const titre_parties = document.createElement("h3");
-                titre_parties.textContent = "Liste des parties :";
-                zone_parties.appendChild(titre_parties);
-
-                const conteneur_parties = document.createElement("div");
-                conteneur_parties.className = "conteneur_parties";
-                zone_parties.appendChild(conteneur_parties);
-
-                el.parties.forEach(partie => {
-
-                    const bloc_partie = document.createElement("div");
-                    bloc_partie.className = "bloc_partie";
-                    conteneur_parties.appendChild(bloc_partie);
-
-                    const check = document.createElement("input");
-                    check.type = "checkbox";
-                    check.className = "partie_list";
-                    check.checked = partie.validation === "1";
-                    bloc_partie.appendChild(check);
-
-                    const texte = document.createElement("span");
-                    texte.className = "text_partie_list";
-                    texte.textContent = partie.nom;
-                    bloc_partie.appendChild(texte);
-                });
-            });
-
-        })
-        .catch(error => {
-            console.log(error);
-        });
+                            div.appendChild(h3);
+                            div.appendChild(p);
+                            document.getElementById("contenu_page").appendChild(div);
+                        })
+                ))
+        ))
+        .catch(console.log);
 
 
 }

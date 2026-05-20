@@ -130,72 +130,45 @@ app.post("/Contenu_liste", (req, res) => {
     });
 });
 
-//Contenue
-app.get('/Contenue', (req, res) => {
+//Réupération des listes d’un utilisateur
+app.get('/Recup_Liste', (req, res) => {
 
     const id_user = req.query.id_user;
 
     const sql = `SELECT * FROM liste WHERE id_user = ?`;
-    const sql_2 = `SELECT * FROM contenu_liste WHERE id_liste = ?`;
-    const sql_3 = `SELECT * FROM element WHERE id = ?`;
 
-    db.query(sql, [id_user], (err, listes) => {
+    db.query(sql, [id_user], (err, result) => {
         if (err) return res.status(500).send("Erreur serveur");
-
-        if (listes.length === 0) {
-            return res.json([]);
-        }
-
-        let resultFinal = [];
-        let listesTraitees = 0;
-
-        listes.forEach(liste => {
-
-            db.query(sql_2, [liste.id], (err, contenu) => {
-                if (err) return res.status(500).send("Erreur serveur");
-
-                if (contenu.length === 0) {
-                    resultFinal.push({
-                        liste: liste,
-                        contenu_liste: [],
-                        elements: []
-                    });
-
-                    listesTraitees++;
-                    if (listesTraitees === listes.length) {
-                        res.json(resultFinal);
-                    }
-                    return;
-                }
-
-                let elements = [];
-                let count = 0;
-
-                contenu.forEach(item => {
-                    db.query(sql_3, [item.id_element], (err, element) => {
-                        if (err) return res.status(500).send("Erreur serveur");
-
-                        elements.push(element[0]);
-                        count++;
-
-                        if (count === contenu.length) {
-                            resultFinal.push({
-                                liste: liste,
-                                contenu_liste: contenu,
-                                elements: elements
-                            });
-
-                            listesTraitees++;
-                            if (listesTraitees === listes.length) {
-                                res.json(resultFinal);
-                            }
-                        }
-                    });
-                });
-            });
-        });
+        res.json(result);
     });
 });
+
+//Réupération des contenus d’une liste par raport a l'élément
+app.get("/Recup_contenu_liste", (req, res) => {
+
+    const id_liste = req.query.id_liste;
+    
+    const sql = `SELECT * FROM contenu_liste WHERE id_liste = ?`;
+
+    db.query(sql, [id_liste], (err, result) => {
+        if (err) return res.status(500).send("Erreur serveur");
+        res.json(result);
+    });
+});
+
+//Réupération des éléments d’une liste
+app.get('/Recup_Element', (req, res) => {
+
+    const id_element = req.query.id_element;
+
+    const sql = `SELECT * FROM element WHERE id = ?`;
+
+    db.query(sql, [id_element], (err, result) => {
+        if (err) return res.status(500).send("Erreur serveur");
+        res.json(result);
+    });
+});
+
 
 /* Lancement */
 app.listen(port, () => {
