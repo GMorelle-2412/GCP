@@ -175,14 +175,13 @@ body::before {
     position: relative;
     z-index: 1;
     display: flex;
-    align-items: center;
     justify-content: center;
     flex-wrap: wrap;
     padding: 2.5rem;
     gap: 1.5rem;
 }
 
-#contenu_page > p {
+#contenu_page>p {
     color: white;
     font-size: 25px;
     margin-top: clamp(10%, 10vh, 10vh);
@@ -263,11 +262,18 @@ body::before {
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 1.75rem;
+    width: 25%;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
     transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
     animation: cardIn 0.3s ease both;
+}
+
+@media (max-width : 1500px) {
+    .element{
+        width: 75%;
+    }
 }
 
 .element:hover {
@@ -277,8 +283,15 @@ body::before {
 }
 
 @keyframes cardIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .element h2 {
@@ -293,7 +306,7 @@ body::before {
     background-clip: text;
 }
 
-.element > p {
+.element>p {
     font-family: 'DM Sans', sans-serif;
     font-size: 0.88rem;
     font-weight: 300;
@@ -356,7 +369,7 @@ body::before {
 }
 
 /* Partie validée → texte barré et atténué */
-.ligne_partie input[type="checkbox"]:checked + .text_partie_list {
+.ligne_partie input[type="checkbox"]:checked+.text_partie_list {
     text-decoration: line-through;
     color: var(--white-dim);
 }
@@ -386,8 +399,15 @@ body::before {
 }
 
 @keyframes modalIn {
-    from { opacity: 0; transform: translateY(10px) scale(0.98); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 #inscription p,
@@ -622,4 +642,255 @@ body::before {
     margin: 0 !important;
     text-transform: none !important;
     letter-spacing: 0 !important;
+}
+
+/* ─── TITRE DE LA CARD (JS génère un h3, pas h2) ─── */
+.element h3 {
+    font-family: var(--font-title);
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: linear-gradient(110deg, var(--white) 40%, var(--violet));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ─── DESCRIPTION (JS génère un p direct dans .element) ─── */
+.element>p {
+    font-size: 0.88rem;
+    font-weight: 300;
+    color: var(--white-dim);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ─── LISTES ASSOCIÉES ─── */
+[id^="listes_"] {
+    display: grid;
+    grid-template-columns: 15px 1fr;
+    align-items: center;
+    column-gap: 0.6rem;
+    row-gap: 0.5rem;
+    margin-top: 0.25rem;
+    /* réduit l'espace avec la description */
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+}
+
+/* Label "LISTES" */
+[id^="listes_"]::before {
+    content: 'Listes';
+    grid-column: 1 / -1;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white-dim);
+    margin-bottom: 0.15rem;
+}
+
+/* Masque la section si elle est vide (aucun enfant autre que ::before) */
+[id^="listes_"]:not(:has(input)) {
+    display: none;
+}
+
+[id^="listes_"] input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--violet);
+    cursor: pointer;
+    justify-self: center;
+    flex-shrink: 0;
+}
+
+[id^="listes_"] p {
+    font-size: 0.88rem;
+    font-weight: 300;
+    color: var(--white);
+    line-height: 1.5;
+    margin: 0;
+}
+
+[id^="listes_"] input[type="checkbox"]:checked+p {
+    text-decoration: line-through;
+    color: var(--white-dim);
+}
+
+/* ═══════════════════════════════════════
+   OVERLAY MODIFICATION ÉLÉMENT
+═══════════════════════════════════════ */
+
+#overlay_Modif_Element {
+    display: none;
+}
+
+#Modif_Element {
+    background: var(--black-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 2rem 2.5rem;
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    box-shadow: 0 0 40px rgba(145, 132, 238, 0.12);
+    animation: modalIn 0.25s ease;
+    max-height: 85vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+
+#Modif_Element::-webkit-scrollbar       { width: 4px; }
+#Modif_Element::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+/* ─── Labels (p "Nom", "Description", noms de listes) ─── */
+#Modif_Element p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--white-dim);
+    margin: 0;
+}
+
+/* ─── Inputs texte (Nom, Description) ─── */
+#Modif_Element input[type="text"] {
+    background: var(--black-mid);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 0.6rem 1rem;
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+}
+
+#Modif_Element input[type="text"]:focus {
+    border-color: var(--violet);
+    box-shadow: 0 0 0 3px var(--violet-glow);
+}
+
+/* ─── Séparateur avant la section listes ─── */
+#Modif_Element input[type="checkbox"]:first-of-type {
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+}
+
+/* ─── Paires p + checkbox (listes associées) ─── */
+/* Le JS ajoute : pListe puis validation (p avant checkbox) */
+#Modif_Element p:has(+ input[type="checkbox"]) {
+    font-size: 0.88rem;
+    font-weight: 300;
+    color: var(--white);
+    text-transform: none;
+    letter-spacing: 0;
+    padding: 0.4rem 0.65rem 0.4rem 2rem; /* indent pour la checkbox */
+    background: var(--black-mid);
+    border: 1px solid var(--border);
+    border-radius: 7px 7px 0 0;
+    margin-bottom: -1px; /* fusionne avec la checkbox en dessous */
+    transition: border-color 0.2s;
+}
+
+#Modif_Element input[type="checkbox"] {
+    accent-color: var(--violet);
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+    margin-left: 0.65rem;
+}
+
+/* ─── Boutons ─── */
+
+/* "Modifier" = premier bouton */
+#Modif_Element button:nth-of-type(1) {
+    margin-top: 0.75rem;
+    width: 100%;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0.65rem 1.4rem;
+    background: var(--violet);
+    color: #fff;
+    border: 1px solid var(--violet);
+    border-radius: 8px;
+    box-shadow: 0 0 18px var(--violet-glow);
+    transition: all 0.2s ease;
+}
+
+#Modif_Element button:nth-of-type(1):hover {
+    background: var(--violet-dim);
+    box-shadow: 0 0 28px rgba(145, 132, 238, 0.45);
+    transform: translateY(-1px);
+}
+
+#Modif_Element button:nth-of-type(1):active {
+    transform: translateY(0);
+}
+
+/* "Annulation" = deuxième bouton */
+#Modif_Element button:nth-of-type(2) {
+    width: 100%;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0.65rem 1.4rem;
+    background: transparent;
+    color: var(--white-dim);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+#Modif_Element button:nth-of-type(2):hover {
+    background: var(--violet-soft);
+    color: var(--white);
+    border-color: var(--violet);
+}
+
+/* ─── Bouton modifier (sur la card) ─── */
+.bouton_modif {
+    margin-top: 0.25rem;
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: var(--violet);
+    border: 1px dashed var(--border);
+    border-radius: 7px;
+    transition: all 0.2s ease;
+}
+
+.bouton_modif:hover {
+    border-color: var(--violet);
+    background: var(--violet-soft);
+    color: var(--white);
+}
+
+.bouton_modif:active {
+    transform: translateY(1px);
 }

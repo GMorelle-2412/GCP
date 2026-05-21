@@ -169,6 +169,22 @@ app.get('/Recup_Element', (req, res) => {
     });
 });
 
+//Modification des checkbox
+app.post("/Modif_checkbox", (req, res) => {
+    const validation = req.body.validation;
+    const id_liste = req.body.id_liste;
+
+    const sql = "UPDATE liste SET validation = ? WHERE id = ?";
+
+    db.query(sql, [validation, id_liste], (err, result) => {
+        if (err) {
+            console.error("ERREUR SQL :", err);
+            return res.status(500).json({ error: err });
+        }
+        res.json(result);
+    });
+});
+
 
 /* Lancement */
 app.listen(port, () => {
