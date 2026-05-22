@@ -9,28 +9,17 @@ function Annulation(bouton_annulation, overlay) {
 /*Bouton d'inscription*/
 function Bouton_Inscription(bouton_validation_inscription) {
 
+    //Génération des élément pour inscription
     Generation_Inscription();
 
     bouton_validation_inscription.addEventListener("click", () => {
 
+        //Recherche des valeurs
         const nom = document.getElementById("input_nom_inscription").value;
-
         const mot_de_passe = document.getElementById("input_mot_de_passe_inscription").value;
 
-        fetch("/Inscription", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                nom: nom,
-                mot_de_passe: mot_de_passe,
-            })
-        })
-            .then(response => response.json())
-
-            .then(result => {
-                overlay_inscription.style.display = "none";
-                verification_page = 0;
-            })
+        //Inscription
+        Fetch_Inscription(nom, mot_de_passe);
 
         //Auto connection après inscription
         Connection(nom, mot_de_passe);
@@ -64,66 +53,15 @@ function Bouton_Déconection(bouton_déconection) {
 
 /*Bouton de création d'un élément*/
 function Bouton_Create_Element(bouton_validation, bouton_creer_partie_list) {
+    
     /*validation*/
     bouton_validation.addEventListener("click", () => {
-
-        const contenus = document.getElementsByClassName("text_partie_list");
-        const validations = document.getElementsByClassName("partie_list");
-        const id_user = localStorage.getItem("id_user");
 
         // Créer l’élément
         const nom = document.getElementById("input_nom_Create_element").value;
         const description = document.getElementById("textarea_description_Create_element").value;
 
-        fetch("/Element", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                nom: nom,
-                description: description
-            })
-        })
-            .then(res => res.json())
-            .then(data => {
-
-                const id_element = data.insertId;
-                console.log("Élément créé :", id_element);
-
-                //Créer toutes les listes et les lier à l’élément
-                for (let i = 0; i < contenus.length; i++) {
-
-                    fetch("/Liste", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            contenu: contenus[i].value,
-                            validation: validations[i].checked,
-                            id_user: id_user
-                        })
-                    })
-                        .then(res => res.json())
-                        .then(data => {
-
-                            const id_liste = data.insertId;
-                            console.log("Liste créée :", id_liste);
-
-                            // Lier l’élément à la liste
-                            fetch("/Contenu_liste", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    id_element: id_element,
-                                    id_liste: id_liste
-                                })
-                            });
-                        });
-                }
-
-                // FIN
-                overlay_Create_element.style.display = "none";
-                overlay_inscription.style.display = "none";
-                verification_page = 0;
-            });
+        Create_Element.Fetch_Post_Element(nom, description);
 
     });
 
@@ -171,6 +109,7 @@ function Modif_Check_List(input) {
     });
 }
 
+/*Bouton de modification d'un projet*/
 function Modif_Projet(bouton_modif, projet) {
     bouton_modif.addEventListener("click", () => {
         Bouton_Modif_Element(projet);

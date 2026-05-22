@@ -166,6 +166,86 @@ function Affichage_projets(id_user) {
         .catch(console.log);
 }
 
+function Fetch_Post_Inscription(nom, mot_de_passe) {
+    fetch("/Inscription", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            nom: nom,
+            mot_de_passe: mot_de_passe,
+        })
+    })
+        .then(response => response.json())
+
+        .then(result => {
+            overlay_inscription.style.display = "none";
+            verification_page = 0;
+        })
+
+}
+
+const Create_Element = {
+    async Fetch_Post_Element(nom, description) {
+        const contenus = document.getElementsByClassName("text_partie_list");
+        const validations = document.getElementsByClassName("partie_list");
+        const id_user = localStorage.getItem("id_user");
+
+        try {
+            const res = await fetch("/Element", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nom, description })
+            });
+
+            if (!res.ok) throw new Error("Erreur création élément");
+
+            const data = await res.json();
+            const id_element = data.insertId;
+
+            // On attend que toutes les listes soient créées
+            await this.Fetch_Post_Liste(contenus, validations, id_user, id_element);
+
+            // Seulement ici on ferme et on recharge
+            overlay_Create_element.style.display = "none";
+            overlay_inscription.style.display = "none";
+            verification_page = 0;
+            location.reload();
+
+        } catch (err) {
+            console.error("Erreur :", err);
+        }
+    },
+
+    async Fetch_Post_Liste(contenus, validations, id_user, id_element) {
+        for (let i = 0; i < contenus.length; i++) {
+            const res = await fetch("/Liste", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contenu: contenus[i].value,
+                    // Si .partie_list n'est pas une checkbox, adapter ici
+                    validation: validations[i].checked ?? false,
+                    id_user
+                })
+            });
+
+            if (!res.ok) throw new Error(`Erreur liste ${i}`);
+
+            const data = await res.json();
+            await this.Fetch_Post_Contenu_Liste(id_element, data.insertId);
+        }
+    },
+
+    async Fetch_Post_Contenu_Liste(id_element, id_liste) {
+        const res = await fetch("/Contenu_liste", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id_element, id_liste })
+        });
+
+        if (!res.ok) throw new Error("Erreur contenu_liste");
+    }
+};
 /*Modification projets*/
 /*function Modification_projets(overlay_Modif_Element, id_element) {
     const get = (url) => fetch(url, { method: "GET", headers: { "Content-Type": "application/json" } }).then(res => res.json());
