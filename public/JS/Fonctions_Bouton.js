@@ -1,58 +1,16 @@
-/*Bouton d'inscription*/
-function Bouton_Inscription() {
-    if (verification_page == 1) return;
-
-    verification_page = 1;
-
-    /*Arrière-plan*/
-    //Floutage de l'arrière-plan
-    const overlay_inscription = document.getElementById("overlay_inscription");
-
-    Object.assign(overlay_inscription.style, {
-        position: "fixed",
-        inset: "0",
-        backdropFilter: "blur(8px)",
-        background: "rgba(0, 0, 0, 0.3)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: "999"
+/*Bouton annulation*/
+function Annulation(bouton_annulation, overlay) {
+    bouton_annulation.addEventListener("click", () => {
+        overlay.style.display = "none";
+        verification_page = 0;
     });
+}
 
-    const inscription = document.getElementById("inscription");
+/*Bouton d'inscription*/
+function Bouton_Inscription(bouton_validation_inscription) {
 
-    inscription.innerHTML = "";
+    Generation_Inscription();
 
-    // Nom
-    const text_nom_inscription = document.createElement("p");
-    text_nom_inscription.textContent = "Nom";
-    inscription.appendChild(text_nom_inscription);
-
-    const input_nom_inscription = document.createElement("input");
-    input_nom_inscription.type = "text";
-    input_nom_inscription.id = "input_nom_inscription";
-    inscription.appendChild(input_nom_inscription);
-
-    // mot_de_passe
-    const text_mot_de_passe_inscription = document.createElement("p");
-    text_mot_de_passe_inscription.textContent = "mot de passe";
-    inscription.appendChild(text_mot_de_passe_inscription);
-
-    const input_mot_de_passe_inscription = document.createElement("input");
-    input_mot_de_passe_inscription.type = "text";
-    input_mot_de_passe_inscription.id = "input_mot_de_passe_inscription";
-    inscription.appendChild(input_mot_de_passe_inscription);
-
-    // Bouton
-    const bouton_validation_inscription = document.createElement("button");
-    bouton_validation_inscription.textContent = "Inscription";
-    inscription.appendChild(bouton_validation_inscription);
-
-    const bouton_annulation_inscription = document.createElement("button");
-    bouton_annulation_inscription.textContent = "Annulation";
-    inscription.appendChild(bouton_annulation_inscription);
-
-    //BDD
     bouton_validation_inscription.addEventListener("click", () => {
 
         const nom = document.getElementById("input_nom_inscription").value;
@@ -78,65 +36,12 @@ function Bouton_Inscription() {
         Connection(nom, mot_de_passe);
     });
 
-    //Annulation
-    bouton_annulation_inscription.addEventListener("click", () => {
-        overlay_inscription.style.display = "none";
-        verification_page = 0;
-    });
 }
 
 /*Bouton de connection*/
-function Bouton_Connection() {
-    if (verification_page == 1) return;
+function Bouton_Connection(bouton_validation_connection) {
 
-    verification_page = 1;
-
-    /* Arrière-plan */
-    const overlay_connection = document.getElementById("overlay_connection");
-
-    Object.assign(overlay_connection.style, {
-        position: "fixed",
-        inset: "0",
-        backdropFilter: "blur(8px)",
-        background: "rgba(0, 0, 0, 0.3)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: "999"
-    });
-
-    const connection = document.getElementById("connection");
-    connection.innerHTML = "";
-
-    // NOM
-    const text_nom_connection = document.createElement("p");
-    text_nom_connection.textContent = "Nom";
-    connection.appendChild(text_nom_connection);
-
-    const input_nom_connection = document.createElement("input");
-    input_nom_connection.type = "text";
-    input_nom_connection.id = "input_nom_connection";
-    connection.appendChild(input_nom_connection);
-
-    //Mot de passe
-    const text_mot_de_passe_connection = document.createElement("p");
-    text_mot_de_passe_connection.textContent = "Mot de passe";
-    connection.appendChild(text_mot_de_passe_connection);
-
-    const input_mot_de_passe_connection = document.createElement("input");
-    input_mot_de_passe_connection.type = "password"; // ✔ correction importante
-    input_mot_de_passe_connection.id = "input_mot_de_passe_connection";
-    connection.appendChild(input_mot_de_passe_connection);
-
-    //Bouton validation
-    const bouton_validation_connection = document.createElement("button");
-    bouton_validation_connection.textContent = "Connexion";
-    connection.appendChild(bouton_validation_connection);
-
-    //Bouton annulation
-    const bouton_annulation_connection = document.createElement("button");
-    bouton_annulation_connection.textContent = "Annulation";
-    connection.appendChild(bouton_annulation_connection);
+    Generation_Connection();
 
     bouton_validation_connection.addEventListener("click", () => {
 
@@ -146,28 +51,10 @@ function Bouton_Connection() {
         Connection(nom_connexion, mot_de_passe_connexion);
 
     });
-
-    /* ANNULATION */
-    bouton_annulation_connection.addEventListener("click", () => {
-        overlay_connection.style.display = "none";
-        verification_page = 0;
-    });
 }
 
 /*Bouton de déconnection*/
-function Bouton_Déconection() {
-
-    const remplacement = document.getElementById("CetI");
-
-    const bouton_déconection = document.createElement("button");
-    bouton_déconection.id = bouton_déconection;
-    bouton_déconection.textContent = "Déconection";
-
-    if (localStorage.getItem("id_user") > 0) {
-
-        remplacement.textContent = "";
-        remplacement.appendChild(bouton_déconection);
-    }
+function Bouton_Déconection(bouton_déconection) {
 
     bouton_déconection.addEventListener("click", () => {
         localStorage.removeItem("id_user");
@@ -176,75 +63,9 @@ function Bouton_Déconection() {
 }
 
 /*Bouton de création d'un élément*/
-function Bouton_Create_Element() {
-
-    if (verification_page == 1) return;
-
-    verification_page = 1;
-
-    const overlay_Create_element = document.getElementById("overlay_Create_element");
-
-    Object.assign(overlay_Create_element.style, {
-        position: "fixed",
-        inset: "0",
-        backdropFilter: "blur(8px)",
-        background: "rgba(0, 0, 0, 0.3)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: "999"
-    });
-
-    const Create_element = document.getElementById("create_element");
-    Create_element.innerHTML = "";
-
-    //Nom
-    const text_nom_Create_element = document.createElement("p");
-    text_nom_Create_element.textContent = "Nom de l'élément";
-    Create_element.appendChild(text_nom_Create_element);
-
-    const input_nom_Create_element = document.createElement("input");
-    input_nom_Create_element.type = "text";
-    input_nom_Create_element.id = "input_nom_Create_element";
-    Create_element.appendChild(input_nom_Create_element);
-
-    //Description
-    const text_description_Create_element = document.createElement("p");
-    text_description_Create_element.textContent = "Description de l'élément";
-    Create_element.appendChild(text_description_Create_element);
-
-    const textarea_description_Create_element = document.createElement("textarea");
-    textarea_description_Create_element.id = "textarea_description_Create_element";
-    Create_element.appendChild(textarea_description_Create_element);
-
-    //Bouton créer une partie d'une list
-    const bouton_creer_partie_list = document.createElement("button");
-    bouton_creer_partie_list.textContent = "Créer une partie";
-    Create_element.appendChild(bouton_creer_partie_list);
-
-    //Zone de création d'une partie d'une list
-    const zone_creer_partie_list = document.createElement("div");
-    zone_creer_partie_list.id = "zone_creer_partie_list";
-    Create_element.appendChild(zone_creer_partie_list);
-
-    //Bouton validation
-    const bouton_validation_Create_element = document.createElement("button");
-    bouton_validation_Create_element.textContent = "Créer";
-    Create_element.appendChild(bouton_validation_Create_element);
-
-    // Bouton annulation
-    const bouton_annulation_Create_element = document.createElement("button");
-    bouton_annulation_Create_element.textContent = "Annulation";
-    Create_element.appendChild(bouton_annulation_Create_element);
-
-    /*annulation*/
-    bouton_annulation_Create_element.addEventListener("click", () => {
-        overlay_Create_element.style.display = "none";
-        verification_page = 0;
-    });
-
+function Bouton_Create_Element(bouton_validation, bouton_creer_partie_list) {
     /*validation*/
-    bouton_validation_Create_element.addEventListener("click", () => {
+    bouton_validation.addEventListener("click", () => {
 
         const contenus = document.getElementsByClassName("text_partie_list");
         const validations = document.getElementsByClassName("partie_list");
@@ -323,16 +144,46 @@ function Bouton_Create_Element() {
         text_partie_list.placeholder = "Nom de la partie";
         liste.appendChild(text_partie_list);
     });
+}
 
+/*Détection de modification de check list*/
+function Modif_Check_List(input) {
+    input.addEventListener("change", () => {
+
+        if (element[0].id === contenu.id_element) {
+            console.log(validation.checked);
+
+            if (contenu.id_liste === liste.id) {
+                fetch("/Modif_checkbox", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id_liste: liste.id,
+                        validation: input.checked
+                    })
+                })
+                    .then(res => res.text())
+                    .then(console.log)
+                    .catch(console.error);
+            }
+        }
+
+    });
+}
+
+function Modif_Projet(bouton_modif, projet) {
+    bouton_modif.addEventListener("click", () => {
+        Bouton_Modif_Element(projet);
+    })
 }
 
 /*Bouton de modification d'un élément*/
-function Bouton_Modif_Element(id_element) {
+/*function Bouton_Modif_Element(id_element) {
     if (verification_page == 1) return;
 
     verification_page = 1;
 
-    /* Arrière-plan */
+    //Arrière-plan
     const overlay_Modif_Element = document.getElementById("overlay_Modif_Element");
 
     Object.assign(overlay_Modif_Element.style, {
@@ -347,4 +198,4 @@ function Bouton_Modif_Element(id_element) {
     });
 
     Modification_projets(overlay_Modif_Element, id_element);
-}
+}*/

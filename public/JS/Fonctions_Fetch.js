@@ -29,7 +29,7 @@ function Connection(nom, mot_de_passe) {
 
 
         } else {
-            Bouton_Déconection();
+            Generation_Déconection();
 
             fetch("/auto_connection?id_user=" + id_user, {
                 method: "GET",
@@ -144,27 +144,7 @@ function Affichage_projets(id_user) {
                                     validation.type = "checkbox";
 
                                     //Détection de modification
-                                    validation.addEventListener("change", () => {
-
-                                        if (element[0].id === contenu.id_element) {
-                                            console.log(validation.checked);
-
-                                            if (contenu.id_liste === liste.id) {
-                                                fetch("/Modif_checkbox", {
-                                                    method: "POST",
-                                                    headers: { "Content-Type": "application/json" },
-                                                    body: JSON.stringify({
-                                                        id_liste: liste.id,
-                                                        validation: validation.checked
-                                                    })
-                                                })
-                                                    .then(res => res.text())
-                                                    .then(console.log)
-                                                    .catch(console.error);
-                                            }
-                                        }
-
-                                    });
+                                    Modif_Check_List(validation);
 
                                     div_listes.appendChild(validation);
 
@@ -177,9 +157,7 @@ function Affichage_projets(id_user) {
                                     bouton_modif.textContent = "Modifier";
                                     div_element.appendChild(bouton_modif);
 
-                                    bouton_modif.addEventListener("click", () => {
-                                        Bouton_Modif_Element(element[0].id);
-                                    })
+                                    Modif_Projet(bouton_modif, element[0]);
                                 });
                         });
                     });
@@ -189,7 +167,7 @@ function Affichage_projets(id_user) {
 }
 
 /*Modification projets*/
-function Modification_projets(overlay_Modif_Element, id_element) {
+/*function Modification_projets(overlay_Modif_Element, id_element) {
     const get = (url) => fetch(url, { method: "GET", headers: { "Content-Type": "application/json" } }).then(res => res.json());
 
     //Récupération des listes 
@@ -295,4 +273,4 @@ function Modification_projets(overlay_Modif_Element, id_element) {
             });
         })
         .catch(console.log);
-}
+}*/
