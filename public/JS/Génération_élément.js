@@ -197,3 +197,51 @@ function Generation_Create_Element() {
 
     Bouton_Create_Element(bouton_validation_Create_element, bouton_creer_partie_list);
 }
+
+function Generation_Affichage_Projets(liste, element) {
+    let div_element = document.getElementById("element_" + element[0].id);
+
+    if (!div_element) {
+        div_element = document.createElement("div");
+        div_element.className = "element";
+        div_element.id = "element_" + element[0].id;
+
+        const h3 = document.createElement("h3");
+        h3.textContent = element[0].nom;
+        div_element.appendChild(h3);
+
+        const p = document.createElement("p");
+        p.textContent = element[0].description;
+        div_element.appendChild(p);
+
+        const div_listes = document.createElement("div");
+        div_listes.id = "listes_" + element[0].id;
+        div_element.appendChild(div_listes);
+
+        document.getElementById("contenu_page").appendChild(div_element);
+    }
+
+    const div_listes = document.getElementById("listes_" + element[0].id);
+
+    const validation = document.createElement("input");
+    validation.className = "partie_list";
+    validation.id = "validation_" + element[0].id;
+    validation.checked = liste.validation === "1";
+    validation.type = "checkbox";
+
+    //Détection de modification
+    Modif_Check_List(validation);
+
+    div_listes.appendChild(validation);
+
+    const pListe = document.createElement("p");
+    pListe.textContent = liste.contenu;
+    div_listes.appendChild(pListe);
+
+    const bouton_modif = document.createElement("button");
+    bouton_modif.className = "bouton_modif";
+    bouton_modif.textContent = "Modifier";
+    div_element.appendChild(bouton_modif);
+
+    Modif_Projet(bouton_modif, element[0]);
+}

@@ -57,7 +57,6 @@ function Bouton_Create_Element(bouton_validation, bouton_creer_partie_list) {
     /*validation*/
     bouton_validation.addEventListener("click", () => {
 
-        // Créer l’élément
         const nom = document.getElementById("input_nom_Create_element").value;
         const description = document.getElementById("textarea_description_Create_element").value;
 

@@ -95,8 +95,35 @@ function Connection(nom, mot_de_passe) {
 }
 
 /*Affichage projets*/
+const Affichage_projets = {
+    async Recup_Liste() {
+        try {
+            const res = await fetch("/Recup_Liste?id_user=" + id_user, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" }
+            })
+                .then(res => res.json())
+
+            const data = await res.json();
+            const id_liste = data.id_liste;
+
+        } catch (err) {
+            console.error("Erreur :", err);
+        }
+    },
+
+    async Recup_Contenu_Liste() {
+
+    },
+
+    async Recup_Element() {
+
+    }
+}
+
 function Affichage_projets(id_user) {
-    const get = (url) => fetch(url, { method: "GET", headers: { "Content-Type": "application/json" } }).then(res => res.json());
+
+    /*const get = (url) => fetch(url, { method: "GET", headers: { "Content-Type": "application/json" } }).then(res => res.json());
 
     //Récupération des listes 
     //(id_user -> id_liste)
@@ -112,60 +139,16 @@ function Affichage_projets(id_user) {
 
                             get("/Recup_Element?id_element=" + contenu.id_element)
                                 .then(element => {
-
-                                    let div_element = document.getElementById("element_" + element[0].id);
-
-                                    if (!div_element) {
-                                        div_element = document.createElement("div");
-                                        div_element.className = "element";
-                                        div_element.id = "element_" + element[0].id;
-
-                                        const h3 = document.createElement("h3");
-                                        h3.textContent = element[0].nom;
-                                        div_element.appendChild(h3);
-
-                                        const p = document.createElement("p");
-                                        p.textContent = element[0].description;
-                                        div_element.appendChild(p);
-
-                                        const div_listes = document.createElement("div");
-                                        div_listes.id = "listes_" + element[0].id;
-                                        div_element.appendChild(div_listes);
-
-                                        document.getElementById("contenu_page").appendChild(div_element);
-                                    }
-
-                                    const div_listes = document.getElementById("listes_" + element[0].id);
-
-                                    const validation = document.createElement("input");
-                                    validation.className = "partie_list";
-                                    validation.id = "validation_" + element[0].id;
-                                    validation.checked = liste.validation === "1";
-                                    validation.type = "checkbox";
-
-                                    //Détection de modification
-                                    Modif_Check_List(validation);
-
-                                    div_listes.appendChild(validation);
-
-                                    const pListe = document.createElement("p");
-                                    pListe.textContent = liste.contenu;
-                                    div_listes.appendChild(pListe);
-
-                                    const bouton_modif = document.createElement("button");
-                                    bouton_modif.className = "bouton_modif";
-                                    bouton_modif.textContent = "Modifier";
-                                    div_element.appendChild(bouton_modif);
-
-                                    Modif_Projet(bouton_modif, element[0]);
+                                    Generation_Affichage_Projets(liste, element);
                                 });
                         });
                     });
             });
         })
-        .catch(console.log);
+        .catch(console.log);*/
 }
 
+/*Inscription*/
 function Fetch_Post_Inscription(nom, mot_de_passe) {
     fetch("/Inscription", {
         method: "POST",
@@ -184,12 +167,10 @@ function Fetch_Post_Inscription(nom, mot_de_passe) {
 
 }
 
+/*Création d'élément*/
 const Create_Element = {
-    async Fetch_Post_Element(nom, description) {
-        const contenus = document.getElementsByClassName("text_partie_list");
-        const validations = document.getElementsByClassName("partie_list");
-        const id_user = localStorage.getItem("id_user");
 
+    async Fetch_Post_Element(nom, description) {
         try {
             const res = await fetch("/Element", {
                 method: "POST",
@@ -197,15 +178,16 @@ const Create_Element = {
                 body: JSON.stringify({ nom, description })
             });
 
-            if (!res.ok) throw new Error("Erreur création élément");
-
             const data = await res.json();
             const id_element = data.insertId;
 
-            // On attend que toutes les listes soient créées
-            await this.Fetch_Post_Liste(contenus, validations, id_user, id_element);
+            const id_user = localStorage.getItem("id_user");
+            const contenus = document.getElementsByClassName("text_partie_list");
+            const validations = document.getElementsByClassName("partie_list");
 
-            // Seulement ici on ferme et on recharge
+            // 🔥 Correction ici
+            await Create_Element.Fetch_Post_Liste(contenus, validations, id_user, id_element);
+
             overlay_Create_element.style.display = "none";
             overlay_inscription.style.display = "none";
             verification_page = 0;
@@ -218,34 +200,34 @@ const Create_Element = {
 
     async Fetch_Post_Liste(contenus, validations, id_user, id_element) {
         for (let i = 0; i < contenus.length; i++) {
+
             const res = await fetch("/Liste", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     contenu: contenus[i].value,
-                    // Si .partie_list n'est pas une checkbox, adapter ici
-                    validation: validations[i].checked ?? false,
+                    validation: validations[i].checked,
                     id_user
                 })
             });
 
-            if (!res.ok) throw new Error(`Erreur liste ${i}`);
-
             const data = await res.json();
-            await this.Fetch_Post_Contenu_Liste(id_element, data.insertId);
+            const id_liste = data.insertId;
+
+            // 🔥 Correction ici
+            await Create_Element.Fetch_Post_Contenu_Liste(id_element, id_liste);
         }
     },
 
     async Fetch_Post_Contenu_Liste(id_element, id_liste) {
-        const res = await fetch("/Contenu_liste", {
+        await fetch("/Contenu_liste", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id_element, id_liste })
         });
-
-        if (!res.ok) throw new Error("Erreur contenu_liste");
     }
 };
+
 /*Modification projets*/
 /*function Modification_projets(overlay_Modif_Element, id_element) {
     const get = (url) => fetch(url, { method: "GET", headers: { "Content-Type": "application/json" } }).then(res => res.json());

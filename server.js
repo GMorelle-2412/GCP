@@ -103,14 +103,14 @@ app.post("/Liste", (req, res) => {
 
 //Elément
 app.post("/Element", (req, res) => {
-    const { nom, description, id_liste } = req.body;
+    const { nom, description} = req.body;
 
     // 1. Créer l’élément
     const sqlElement = "INSERT INTO element (nom, description) VALUES (?, ?)";
 
     db.query(sqlElement, [nom, description], (err, result) => {
         if (err) return res.status(500).json({ error: err });
-        res.json({ insertId: result.insertId });
+        res.json(result);
     });
 });
 
