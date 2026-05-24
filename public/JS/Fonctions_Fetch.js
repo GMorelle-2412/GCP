@@ -1,151 +1,61 @@
 /*Connection*/
-function Connection(nom, mot_de_passe) {
+function Fetch_Get_Connection(nom, mot_de_passe) {
+    fetch("/connection?nom=" + nom + "&mot_de_passe=" + mot_de_passe, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    })
+        .then(res => res.json())
+        .then(data => {
 
-    //Connection Automatique
-    if (nom === "nul" || mot_de_passe === "nul") {
+            console.log(data);
 
-        const nom_user = document.createElement("p");
-        nom_user.id = "nom_user";
-        nom_user.textContent = "Chargement...";
-        document.getElementById("user_name").appendChild(nom_user);
+            if (data.length > 0) {
+                overlay_connection.style.display = "none";
+                verification_page = 0;
+                localStorage.setItem("id_user", data[0].id); // Stockage de l'id de l'utilisateur dans le localStorage
+                location.reload();
 
-        const id_user = localStorage.getItem("id_user");
+            } else {
+                const text_connection_erreur = document.createElement("p");
+                text_connection_erreur.textContent = "Nom ou mot de passe incorrect";
+                text_connection_erreur.className = "text_erreur";
+                connection.appendChild(text_connection_erreur);
+            }
 
-        if (!id_user) {
-            nom_user.textContent = "Utilisateur non connecté";
-
-            const bouton_connection = document.createElement("button");
-            bouton_connection.id = "Bouton_Connection";
-            bouton_connection.textContent = "Connection";
-            bouton_connection.onclick = Bouton_Connection;
-            document.getElementById("CetI").appendChild(bouton_connection);
-
-            const bouton_inscription = document.createElement("button");
-            bouton_inscription.id = "Bouton_Inscription";
-            bouton_inscription.textContent = "Inscription";
-            bouton_inscription.onclick = Bouton_Inscription;
-            document.getElementById("CetI").appendChild(bouton_inscription);
-
-
-
-        } else {
-            Generation_Déconection();
-
-            fetch("/auto_connection?id_user=" + id_user, {
-                method: "GET",
-                headers: { "Content-Type": "application/json" }
-            })
-                .then(res => res.json())
-                .then(data => {
-
-                    if (data.length > 0) {
-
-                        const recup_nom = data[0].nom;
-
-                        console.log("Nom récupéré :", recup_nom);
-
-                        nom_user.textContent = recup_nom;
-
-                        document.getElementById("text_par_defaut").textContent = " ";
-
-
-                    } else {
-                        nom_user.textContent = "Utilisateur inconnu";
-                    }
-                })
-                .catch(error => {
-                    console.log(error);
-                    nom_user.textContent = "Erreur";
-                });
-
-            Affichage_projets(id_user);
-
-        }
-    }
-
-    //Connection
-    else {
-        fetch("/connection?nom=" + nom + "&mot_de_passe=" + mot_de_passe, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" }
         })
-            .then(res => res.json())
-            .then(data => {
-
-                console.log(data);
-
-                if (data.length > 0) {
-                    overlay_connection.style.display = "none";
-                    verification_page = 0;
-                    localStorage.setItem("id_user", data[0].id); // Stockage de l'id de l'utilisateur dans le localStorage
-                    location.reload();
-
-                } else {
-                    const text_connection_erreur = document.createElement("p");
-                    text_connection_erreur.textContent = "Nom ou mot de passe incorrect";
-                    text_connection_erreur.className = "text_erreur";
-                    connection.appendChild(text_connection_erreur);
-                }
-
-            })
-            .catch(error => {
-                console.log(error);
-            });
-    }
+        .catch(error => {
+            console.log(error);
+        });
 }
 
-/*Affichage projets*/
-const Affichage_projets = {
-    async Recup_Liste() {
-        try {
-            const res = await fetch("/Recup_Liste?id_user=" + id_user, {
-                method: "GET",
-                headers: { "Content-Type": "application/json" }
-            })
-                .then(res => res.json())
+/*Auto connection*/
+function Fetch_Get_Auto_Connection(id_user, nom_user) {
+    fetch("/auto_connection?id_user=" + id_user, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    })
+        .then(res => res.json())
+        .then(data => {
 
-            const data = await res.json();
-            const id_liste = data.id_liste;
+            if (data.length > 0) {
 
-        } catch (err) {
-            console.error("Erreur :", err);
-        }
-    },
+                const recup_nom = data[0].nom;
 
-    async Recup_Contenu_Liste() {
+                console.log("Nom récupéré :", recup_nom);
 
-    },
+                nom_user.textContent = recup_nom;
 
-    async Recup_Element() {
+                document.getElementById("text_par_defaut").textContent = " ";
 
-    }
-}
 
-function Affichage_projets(id_user) {
-
-    /*const get = (url) => fetch(url, { method: "GET", headers: { "Content-Type": "application/json" } }).then(res => res.json());
-
-    //Récupération des listes 
-    //(id_user -> id_liste)
-    get("/Recup_Liste?id_user=" + id_user)
-        .then(listes => {
-
-            listes.forEach(liste => {
-
-                get("/Recup_contenu_liste?id_liste=" + liste.id)
-                    .then(contenus => {
-
-                        contenus.forEach(contenu => {
-
-                            get("/Recup_Element?id_element=" + contenu.id_element)
-                                .then(element => {
-                                    Generation_Affichage_Projets(liste, element);
-                                });
-                        });
-                    });
-            });
+            } else {
+                nom_user.textContent = "Utilisateur inconnu";
+            }
         })
-        .catch(console.log);*/
+        .catch(error => {
+            console.log(error);
+            nom_user.textContent = "Erreur";
+        });
 }
 
 /*Inscription*/
@@ -165,6 +75,44 @@ function Fetch_Post_Inscription(nom, mot_de_passe) {
             verification_page = 0;
         })
 
+}
+
+/*Affichage projets*/
+const Affichage_projets = {
+
+    async Recup_Liste(id_user) {
+        try {
+            const res = await fetch("/Recup_Liste?id_user=" + id_user);
+            const data_liste = await res.json();
+
+            //const id_liste = data.map(item => item.id_liste);
+
+            for (let i = 0; i < data_liste.length; i++) {
+                await Affichage_projets.Recup_Contenu_Liste(data_liste[i]);
+            }
+
+        } catch (err) {
+            console.error("Erreur :", err);
+        }
+    },
+
+    async Recup_Contenu_Liste(data_liste) {
+        const res = await fetch("/Recup_contenu_liste?id_liste=" + data_liste.id);
+        const data = await res.json();
+
+        const contenu = data;
+
+        for (let j = 0; j < contenu.length; j++) {
+            await Affichage_projets.Recup_Element(contenu[j], data_liste);
+        }
+    },
+
+    async Recup_Element(contenu, data_liste) {
+        const res = await fetch("/Recup_Element?id_element=" + contenu.id_element);
+        const data_element = await res.json();
+
+        Generation_Affichage_Projets(data_liste, data_element, contenu);
+    }
 }
 
 /*Création d'élément*/

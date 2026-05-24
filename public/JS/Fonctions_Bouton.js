@@ -7,10 +7,15 @@ function Annulation(bouton_annulation, overlay) {
 }
 
 /*Bouton d'inscription*/
-function Bouton_Inscription(bouton_validation_inscription) {
+function Bouton_Page_Inscription(bouton_page_inscription) {
+    bouton_page_inscription.addEventListener("click", () => {
 
-    //Génération des élément pour inscription
-    Generation_Inscription();
+        Generation_Inscription();
+
+    });
+}
+
+function Bouton_Inscription(bouton_validation_inscription) {
 
     bouton_validation_inscription.addEventListener("click", () => {
 
@@ -19,26 +24,31 @@ function Bouton_Inscription(bouton_validation_inscription) {
         const mot_de_passe = document.getElementById("input_mot_de_passe_inscription").value;
 
         //Inscription
-        Fetch_Inscription(nom, mot_de_passe);
+        Fetch_Post_Inscription(nom, mot_de_passe);
 
         //Auto connection après inscription
-        Connection(nom, mot_de_passe);
+        Fetch_Get_Connection(nom, mot_de_passe);
     });
 
 }
 
 /*Bouton de connection*/
+function Bouton_Page_Connection(bouton_page_connection) {
+
+    bouton_page_connection.addEventListener("click", () => {
+
+        Generation_Connection();
+
+    });
+}
+
 function Bouton_Connection(bouton_validation_connection) {
 
-    Generation_Connection();
-
     bouton_validation_connection.addEventListener("click", () => {
-
         const nom_connexion = document.getElementById("input_nom_connection").value;
         const mot_de_passe_connexion = document.getElementById("input_mot_de_passe_connection").value;
 
-        Connection(nom_connexion, mot_de_passe_connexion);
-
+        Fetch_Get_Connection(nom_connexion, mot_de_passe_connexion);
     });
 }
 
@@ -53,7 +63,7 @@ function Bouton_Déconection(bouton_déconection) {
 
 /*Bouton de création d'un élément*/
 function Bouton_Create_Element(bouton_validation, bouton_creer_partie_list) {
-    
+
     /*validation*/
     bouton_validation.addEventListener("click", () => {
 
@@ -84,11 +94,11 @@ function Bouton_Create_Element(bouton_validation, bouton_creer_partie_list) {
 }
 
 /*Détection de modification de check list*/
-function Modif_Check_List(input) {
+function Modif_Check_List(input, element, liste, contenu) {
     input.addEventListener("change", () => {
 
         if (element[0].id === contenu.id_element) {
-            console.log(validation.checked);
+            console.log(input.checked);
 
             if (contenu.id_liste === liste.id) {
                 fetch("/Modif_checkbox", {

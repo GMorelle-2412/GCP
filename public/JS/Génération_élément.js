@@ -1,3 +1,39 @@
+function Generation_Démarage() {
+
+    const nom_user = document.createElement("p");
+    nom_user.id = "nom_user";
+    nom_user.textContent = "Chargement...";
+    document.getElementById("user_name").appendChild(nom_user);
+
+    const id_user = localStorage.getItem("id_user");
+
+    if (!id_user) {
+
+        nom_user.textContent = "Utilisateur non connecté";
+
+        const bouton_connection = document.createElement("button");
+        bouton_connection.id = "Bouton_Connection";
+        bouton_connection.textContent = "Connection";
+        document.getElementById("CetI").appendChild(bouton_connection);
+
+        const bouton_inscription = document.createElement("button");
+        bouton_inscription.id = "Bouton_Inscription";
+        bouton_inscription.textContent = "Inscription";
+        document.getElementById("CetI").appendChild(bouton_inscription);
+
+        Bouton_Page_Connection(bouton_connection);
+        Bouton_Page_Inscription(bouton_inscription);
+
+
+    } else {
+        Generation_Déconection();
+
+        Fetch_Get_Auto_Connection(id_user, nom_user);
+
+        Affichage_projets.Recup_Liste(id_user);
+    }
+}
+
 function Generation_Inscription() {
     if (verification_page == 1) return;
 
@@ -198,7 +234,14 @@ function Generation_Create_Element() {
     Bouton_Create_Element(bouton_validation_Create_element, bouton_creer_partie_list);
 }
 
-function Generation_Affichage_Projets(liste, element) {
+function Generation_Affichage_Projets(liste, element, contenu) {
+
+    // Sécurité : vérifier que element[0] existe
+    if (!element || !element[0]) {
+        console.error("Erreur : élément vide", element);
+        return;
+    }
+
     let div_element = document.getElementById("element_" + element[0].id);
 
     if (!div_element) {
@@ -225,12 +268,11 @@ function Generation_Affichage_Projets(liste, element) {
 
     const validation = document.createElement("input");
     validation.className = "partie_list";
-    validation.id = "validation_" + element[0].id;
-    validation.checked = liste.validation === "1";
+    validation.id = "validation_" + liste.id;
+    validation.checked = liste.validation;
     validation.type = "checkbox";
 
-    //Détection de modification
-    Modif_Check_List(validation);
+    Modif_Check_List(validation, element, liste, contenu);
 
     div_listes.appendChild(validation);
 
@@ -238,10 +280,14 @@ function Generation_Affichage_Projets(liste, element) {
     pListe.textContent = liste.contenu;
     div_listes.appendChild(pListe);
 
-    const bouton_modif = document.createElement("button");
-    bouton_modif.className = "bouton_modif";
-    bouton_modif.textContent = "Modifier";
-    div_element.appendChild(bouton_modif);
+    if (!document.getElementById("bouton_modif_" + element[0].id)) {
+        const bouton_modif = document.createElement("button");
+        bouton_modif.className = "bouton_modif";
+        bouton_modif.id = "bouton_modif_" + element[0].id;
+        bouton_modif.textContent = "Modifier";
 
-    Modif_Projet(bouton_modif, element[0]);
+        div_element.appendChild(bouton_modif);
+
+        Modif_Projet(bouton_modif, element[0]);
+    }
 }
