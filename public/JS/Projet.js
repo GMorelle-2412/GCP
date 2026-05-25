@@ -243,12 +243,13 @@ const Affichage_Projets = {
 
             div_element.appendChild(bouton_modif);
 
-            //Modification_Projet.Modif_Projet(bouton_modif, element[0]);
+            Modification_Projet.Bouton_Modif_Projet(bouton_modif, element[0]);
         }
     },
 };
 
 const Modification_Projet = {
+
     Modif_Check_List(input, element, liste, contenu) {
         input.addEventListener("change", () => {
 
@@ -275,11 +276,11 @@ const Modification_Projet = {
 
     Bouton_Modif_Projet(bouton_modif, projet) {
         bouton_modif.addEventListener("click", () => {
-            Modif_Projet(projet);
+            Modification_Projet.Modif_Projet(projet);
         })
     },
 
-    Modif_Projet(id_element) {
+    Modif_Projet(projet) {
         if (verification_page == 1) return;
 
         verification_page = 1;
@@ -298,114 +299,145 @@ const Modification_Projet = {
             zIndex: "999"
         });
 
-        Modification_Projet.Modification_projets(overlay_Modif_Element, id_element);
+        Modification_Projet.Recup_Liste(projet);
     },
 
-    /*Modification_projets(overlay_Modif_Element, id_element) {
-        const get = (url) => fetch(url, { method: "GET", headers: { "Content-Type": "application/json" } }).then(res => res.json());
-
-        //Récupération des listes 
-        //(id_user -> id_liste)
+    async Recup_Liste(projet) {
         const id_user = localStorage.getItem("id_user");
 
-        let bloc = 0;
+        const res = await fetch("/Recup_Liste?id_user=" + id_user);
 
-        get("/Recup_Liste?id_user=" + id_user)
-            .then(listes => {
+        const data_liste = await res.json();
 
-                listes.forEach((liste, index) => {
+        for (let i = 0; i < data_liste.length; i++) { Modification_Projet.Recup_contenu_liste(data_liste[i], projet); }
+    },
 
-                    get("/Recup_contenu_liste?id_liste=" + liste.id)
-                        .then(contenus => {
+    async Recup_contenu_liste(data_liste, projet) {
+        const res = await fetch("/Recup_contenu_liste?id_liste=" + data_liste.id);
 
-                            contenus.forEach(contenu => {
+        const data_contenu = await res.json();
 
-                                get("/Recup_Element?id_element=" + contenu.id_element)
-                                    .then(element => {
+        for (let j = 0; j < data_contenu.length; j++) { Modification_Projet.Recup_Element(data_contenu[j].id_element, projet, data_contenu, data_liste) }
+    },
 
-                                        if (bloc === 0) {
-                                            if (id_element === element[0].id) {
+    async Recup_Element(id_element, projet, data_contenu, data_liste) {
+        const res = await fetch("/Recup_Element?id_element=" + id_element);
 
-                                                const Modif_Element = document.getElementById("Modif_Element");
-                                                overlay_Modif_Element.appendChild(Modif_Element);
-                                                Modif_Element.innerHTML = "";
+        const data_element = await res.json();
 
-                                                //Nom
-                                                const text_nom_Modif_Element = document.createElement("p");
-                                                text_nom_Modif_Element.textContent = "Nom";
-                                                Modif_Element.appendChild(text_nom_Modif_Element);
+        Modification_Projet.Affichage_modif_projet(data_element, projet, data_contenu, data_liste);
+    },
 
-                                                const input_nom_Modif_Element = document.createElement("input");
-                                                input_nom_Modif_Element.type = "text"
-                                                input_nom_Modif_Element.value = element[0].nom;
-                                                input_nom_Modif_Element.id = "input_nom_Modif_Element";
-                                                Modif_Element.appendChild(input_nom_Modif_Element);
+    Affichage_modif_projet(data_element, projet, data_contenu, data_liste) {
 
-                                                //Déscription
-                                                const text_mot_de_passe_Modif_Element = document.createElement("p");
-                                                text_mot_de_passe_Modif_Element.textContent = "Déscription";
-                                                Modif_Element.appendChild(text_mot_de_passe_Modif_Element);
+        Modification_Projet.Generation_modif_projet_element(data_element, projet);
 
-                                                const input_mot_de_passe_Modif_Element = document.createElement("input");
-                                                input_mot_de_passe_Modif_Element.type = "text";
-                                                input_mot_de_passe_Modif_Element.value = element[0].description;
-                                                input_mot_de_passe_Modif_Element.id = "input_mot_de_passe_Modif_Element";
-                                                Modif_Element.appendChild(input_mot_de_passe_Modif_Element);
+        Modification_Projet.Generation_modif_projet_liste(data_element, projet, data_contenu, data_liste);
 
-                                                bloc = 1;
+    },
 
-                                            }
-                                        }
+    Generation_modif_projet_element(data_element, projet) {
+        if (!document.getElementById("bouton_annulation_Modif_Element") && !document.getElementById("bouton_validation_Modif_Element")) {
 
-                                        if (contenu.id_element === id_element) {
-                                            const div_listes_modif = document.getElementById("Modif_Element");
+            if (projet.id === data_element[0].id) {
 
-                                            const validation_modif = document.createElement("input");
-                                            validation_modif.className = "partie_list";
-                                            validation_modif.id = "validation_" + element[0].id;
-                                            validation_modif.checked = liste.validation === "1";
-                                            validation_modif.type = "checkbox";
+                const Modif_Element = document.getElementById("Modif_Element");
+                overlay_Modif_Element.appendChild(Modif_Element);
+                Modif_Element.innerHTML = "";
 
-                                            const pListe_modif = document.createElement("p");
-                                            pListe_modif.textContent = liste.contenu;
-                                            pListe_modif.id = "pListe_" + element[0].id;
+                //Nom
+                const text_nom_Modif_Element = document.createElement("p");
+                text_nom_Modif_Element.textContent = "Nom";
+                Modif_Element.appendChild(text_nom_Modif_Element);
 
-                                            div_listes_modif.appendChild(pListe_modif);
-                                            div_listes_modif.appendChild(validation_modif);
-                                        }
+                const input_nom_Modif_Element = document.createElement("input");
+                input_nom_Modif_Element.type = "text"
+                input_nom_Modif_Element.value = data_element[0].nom;
+                input_nom_Modif_Element.id = "input_nom_Modif_Element";
+                Modif_Element.appendChild(input_nom_Modif_Element);
 
-                                        if (index === listes.length - 1) {
+                //Déscription
+                const text_mot_de_passe_Modif_Element = document.createElement("p");
+                text_mot_de_passe_Modif_Element.textContent = "Déscription";
+                Modif_Element.appendChild(text_mot_de_passe_Modif_Element);
 
-                                            //Bouton validation
-                                            const bouton_validation_Modif_Element = document.createElement("button");
-                                            bouton_validation_Modif_Element.textContent = "Modifier";
-                                            document.getElementById("Modif_Element").appendChild(bouton_validation_Modif_Element);
+                const input_mot_de_passe_Modif_Element = document.createElement("input");
+                input_mot_de_passe_Modif_Element.type = "text";
+                input_mot_de_passe_Modif_Element.value = data_element[0].description;
+                input_mot_de_passe_Modif_Element.id = "input_mot_de_passe_Modif_Element";
+                Modif_Element.appendChild(input_mot_de_passe_Modif_Element);
 
-                                            //Bouton annulation
-                                            const bouton_annulation_Modif_Element = document.createElement("button");
-                                            bouton_annulation_Modif_Element.textContent = "Annulation";
-                                            document.getElementById("Modif_Element").appendChild(bouton_annulation_Modif_Element);
+                const zone_liste = document.createElement("div");
+                zone_liste.id = "zone_liste";
+                Modif_Element.appendChild(zone_liste);
 
-                                            //Validation
-                                            bouton_validation_Modif_Element.addEventListener("click", () => {
+                Modification_Projet.Generation_Boutons_modif_projet();
 
-                                                const nom_connexion = document.getElementById("input_nom_Modif_Element").value;
-                                                const mot_de_passe_connexion = document.getElementById("input_mot_de_passe_Modif_Element").value;
+                Modification_Projet.Boutons_validation_modif_projet();
 
-                                            });
+                Modification_Projet.Boutons_annulation_modif_projet();
+            }
+        }
+    },
 
-                                            //Annulation
-                                            bouton_annulation_Modif_Element.addEventListener("click", () => {
-                                                overlay_Modif_Element.style.display = "none";
-                                                verification_page = 0;
-                                                bloc = 0;
-                                            });
-                                        }
-                                    });
-                            });
-                        });
-                });
-            })
-            .catch(console.log);
-    }*/
+    Generation_modif_projet_liste(data_element, projet, data_contenu, data_liste) {
+        if (data_contenu[0].id_element === projet.id) {
+            const zone_liste = document.getElementById("zone_liste");
+
+            const div_liste = document.createElement("div");
+            div_liste.className = "div_liste";
+
+            const validation_modif = document.createElement("input");
+            validation_modif.className = "partie_list";
+            validation_modif.id = "validation_" + data_element[0].id;
+            validation_modif.checked = data_liste.validation;
+            validation_modif.type = "checkbox";
+
+            const pListe_modif = document.createElement("p");
+            pListe_modif.textContent = data_liste.contenu;
+            pListe_modif.id = "pListe_" + data_element[0].id;
+
+            div_liste.appendChild(pListe_modif);
+            div_liste.appendChild(validation_modif);
+
+            zone_liste.appendChild(div_liste);
+        }
+    },
+
+    Generation_Boutons_modif_projet() {
+        //Bouton validation
+        const bouton_validation_Modif_Element = document.createElement("button");
+        bouton_validation_Modif_Element.textContent = "Modifier";
+        bouton_validation_Modif_Element.id = "bouton_validation_Modif_Element";
+        document.getElementById("Modif_Element").appendChild(bouton_validation_Modif_Element);
+
+        //Bouton annulation
+        const bouton_annulation_Modif_Element = document.createElement("button");
+        bouton_annulation_Modif_Element.textContent = "Annulation";
+        bouton_annulation_Modif_Element.id = "bouton_annulation_Modif_Element";
+        document.getElementById("Modif_Element").appendChild(bouton_annulation_Modif_Element);
+    },
+
+    Boutons_validation_modif_projet() {
+        const bouton_validation_Modif_Element = document.getElementById("bouton_validation_Modif_Element");
+        
+        //Validation
+        bouton_validation_Modif_Element.addEventListener("click", () => {
+
+            const nom_connexion = document.getElementById("input_nom_Modif_Element").value;
+            const mot_de_passe_connexion = document.getElementById("input_mot_de_passe_Modif_Element").value;
+
+        });
+    },
+
+    Boutons_annulation_modif_projet() {
+        const bouton_annulation_Modif_Element = document.getElementById("bouton_annulation_Modif_Element");
+
+        //Annulation
+        bouton_annulation_Modif_Element.addEventListener("click", () => {
+            document.getElementById("Modif_Element").innerHTML = "";
+            overlay_Modif_Element.style.display = "none";
+            verification_page = 0;
+        });
+    }
 };

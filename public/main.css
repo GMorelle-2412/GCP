@@ -894,3 +894,20 @@ body::before {
 .bouton_modif:active {
     transform: translateY(1px);
 }
+
+.div_liste{
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.div_liste input{
+    margin-right: 10px;
+}
+
+.div_liste p {
+    text-align: start;
+    width: 100%;
+}
