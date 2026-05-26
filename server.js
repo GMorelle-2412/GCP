@@ -185,6 +185,58 @@ app.post("/Modif_checkbox", (req, res) => {
     });
 });
 
+//Modifier un element
+app.put('/Modif_element', (req, res) => {
+    const { nom, description, id } = req.body;
+
+    const sql = `
+        UPDATE element 
+        SET nom = ?, description = ?
+        WHERE id = ?
+    `;
+
+    db.query(sql, [nom, description, id], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Erreur serveur" });
+        }
+
+        res.json({ message: "Projet mis à jour avec succès" });
+    });
+});
+
+app.put('/Update_Liste', (req, res) => {
+    const { contenu, validation, id } = req.body;
+
+    const sql = `
+        UPDATE liste 
+        SET contenu = ?, validation = ?
+        WHERE id = ?
+    `;
+
+    db.query(sql, [contenu, validation, id], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Erreur serveur" });
+        }
+
+        res.json({ message: "Projet mis à jour avec succès" });
+    });
+});
+
+//Rechercher les listes
+app.get("/Recherche_liste", (req, res) => {
+
+    const id_element = req.query.id_element;
+    
+    const sql = `SELECT * FROM contenu_liste WHERE id_element = ?`;
+
+    db.query(sql, [id_element], (err, result) => {
+        if (err) return res.status(500).send("Erreur serveur");
+        res.json(result);
+    });
+});
+
 
 /* Lancement */
 app.listen(port, () => {

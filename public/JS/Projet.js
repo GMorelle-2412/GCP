@@ -73,7 +73,7 @@ const Creation_Projet = {
             const nom = document.getElementById("input_nom_Create_element").value;
             const description = document.getElementById("textarea_description_Create_element").value;
 
-            Create_Element.Fetch_Post_Element(nom, description);
+            Creation_Projet.Fetch_Post_Element(nom, description);
 
         });
 
@@ -112,7 +112,7 @@ const Creation_Projet = {
             const validations = document.getElementsByClassName("partie_list");
 
             // 🔥 Correction ici
-            await Create_Element.Fetch_Post_Liste(contenus, validations, id_user, id_element);
+            await Creation_Projet.Fetch_Post_Liste(contenus, validations, id_user, id_element);
 
             overlay_Create_element.style.display = "none";
             overlay_inscription.style.display = "none";
@@ -140,8 +140,7 @@ const Creation_Projet = {
             const data = await res.json();
             const id_liste = data.insertId;
 
-            // 🔥 Correction ici
-            await Create_Element.Fetch_Post_Contenu_Liste(id_element, id_liste);
+            await Creation_Projet.Fetch_Post_Contenu_Liste(id_element, id_liste);
         }
     },
 
@@ -224,7 +223,7 @@ const Affichage_Projets = {
         const validation = document.createElement("input");
         validation.className = "partie_list";
         validation.id = "validation_" + liste.id;
-        validation.checked = liste.validation;
+        validation.checked = Boolean(Number(liste.validation));
         validation.type = "checkbox";
 
         Modification_Projet.Modif_Check_List(validation, element, liste, contenu);
@@ -248,6 +247,7 @@ const Affichage_Projets = {
     },
 };
 
+let Id_Liste = 0;
 const Modification_Projet = {
 
     Modif_Check_List(input, element, liste, contenu) {
@@ -304,20 +304,21 @@ const Modification_Projet = {
 
     async Recup_Liste(projet) {
         const id_user = localStorage.getItem("id_user");
-
         const res = await fetch("/Recup_Liste?id_user=" + id_user);
-
         const data_liste = await res.json();
 
-        for (let i = 0; i < data_liste.length; i++) { Modification_Projet.Recup_contenu_liste(data_liste[i], projet); }
+        for (let i = 0; i < data_liste.length; i++) {
+            await Modification_Projet.Recup_contenu_liste(data_liste[i], projet);
+        }
     },
 
     async Recup_contenu_liste(data_liste, projet) {
         const res = await fetch("/Recup_contenu_liste?id_liste=" + data_liste.id);
-
         const data_contenu = await res.json();
 
-        for (let j = 0; j < data_contenu.length; j++) { Modification_Projet.Recup_Element(data_contenu[j].id_element, projet, data_contenu, data_liste) }
+        for (let j = 0; j < data_contenu.length; j++) {
+            await Modification_Projet.Recup_Element(data_contenu[j].id_element, projet, data_contenu, data_liste);
+        }
     },
 
     async Recup_Element(id_element, projet, data_contenu, data_liste) {
@@ -329,11 +330,8 @@ const Modification_Projet = {
     },
 
     Affichage_modif_projet(data_element, projet, data_contenu, data_liste) {
-
         Modification_Projet.Generation_modif_projet_element(data_element, projet);
-
         Modification_Projet.Generation_modif_projet_liste(data_element, projet, data_contenu, data_liste);
-
     },
 
     Generation_modif_projet_element(data_element, projet) {
@@ -373,7 +371,11 @@ const Modification_Projet = {
 
                 Modification_Projet.Generation_Boutons_modif_projet();
 
-                Modification_Projet.Boutons_validation_modif_projet();
+                Modification_Projet.Bouton_Delete_liste_modif_projet();
+
+                Modification_Projet.Bouton_Liste_Modif_Projet();
+
+                Modification_Projet.Boutons_validation_modif_projet(data_element[0].id);
 
                 Modification_Projet.Boutons_annulation_modif_projet();
             }
@@ -385,19 +387,29 @@ const Modification_Projet = {
             const zone_liste = document.getElementById("zone_liste");
 
             const div_liste = document.createElement("div");
+            div_liste.id = "div_liste_" + [Id_Liste];
             div_liste.className = "div_liste";
 
             const validation_modif = document.createElement("input");
-            validation_modif.className = "partie_list";
-            validation_modif.id = "validation_" + data_element[0].id;
-            validation_modif.checked = data_liste.validation;
+            validation_modif.className = "validation_" + [Id_Liste];
+            validation_modif.checked = Boolean(Number(data_liste.validation));
             validation_modif.type = "checkbox";
 
-            const pListe_modif = document.createElement("p");
-            pListe_modif.textContent = data_liste.contenu;
-            pListe_modif.id = "pListe_" + data_element[0].id;
+            const Input_Liste_modif = document.createElement("input");
+            Input_Liste_modif.type = "text";
+            Input_Liste_modif.value = data_liste.contenu;
+            Input_Liste_modif.className = "Input_Liste_modif_" + [Id_Liste];
 
-            div_liste.appendChild(pListe_modif);
+
+            const Bouton_Delete_liste = document.createElement("button");
+            Bouton_Delete_liste.textContent = "Résilier";
+            Bouton_Delete_liste.className = "Bouton_Delete_liste";
+            Bouton_Delete_liste.id = Id_Liste;
+
+            Id_Liste++;
+
+            div_liste.appendChild(Bouton_Delete_liste);
+            div_liste.appendChild(Input_Liste_modif);
             div_liste.appendChild(validation_modif);
 
             zone_liste.appendChild(div_liste);
@@ -405,6 +417,12 @@ const Modification_Projet = {
     },
 
     Generation_Boutons_modif_projet() {
+        //Bouton Ajoute
+        const bouton_liste_Modif_Element = document.createElement("button");
+        bouton_liste_Modif_Element.textContent = "Ajouter";
+        bouton_liste_Modif_Element.id = "bouton_liste_Modif_Element";
+        document.getElementById("Modif_Element").appendChild(bouton_liste_Modif_Element);
+
         //Bouton validation
         const bouton_validation_Modif_Element = document.createElement("button");
         bouton_validation_Modif_Element.textContent = "Modifier";
@@ -418,16 +436,123 @@ const Modification_Projet = {
         document.getElementById("Modif_Element").appendChild(bouton_annulation_Modif_Element);
     },
 
-    Boutons_validation_modif_projet() {
-        const bouton_validation_Modif_Element = document.getElementById("bouton_validation_Modif_Element");
-        
-        //Validation
-        bouton_validation_Modif_Element.addEventListener("click", () => {
+    Bouton_Liste_Modif_Projet() {
+        const bouton_liste_Modif_Element = document.getElementById("bouton_liste_Modif_Element");
 
-            const nom_connexion = document.getElementById("input_nom_Modif_Element").value;
-            const mot_de_passe_connexion = document.getElementById("input_mot_de_passe_Modif_Element").value;
+        //Validation
+        bouton_liste_Modif_Element.addEventListener("click", () => {
+
+            const validation_modif = document.createElement("input");
+            validation_modif.className = "partie_list";
+            validation_modif.type = "checkbox";
+
+            const Input_Liste_modif = document.createElement("input");
+            Input_Liste_modif.type = "text";
+            Input_Liste_modif.className = "Input_Liste_modif";
+
+            const Bouton_Delete_liste = document.createElement("button");
+            Bouton_Delete_liste.textContent = "Résilier";
+            Bouton_Delete_liste.className = "Bouton_Delete_liste";
+            Bouton_Delete_liste.id = Id_Liste;
+
+            const zone_liste = document.getElementById("zone_liste");
+            const div_liste = document.createElement("div");
+            div_liste.className = "div_liste";
+
+            Id_Liste++;
+
+            div_liste.appendChild(Bouton_Delete_liste);
+            div_liste.appendChild(Input_Liste_modif);
+            div_liste.appendChild(validation_modif);
+            zone_liste.appendChild(div_liste);
 
         });
+    },
+
+    Boutons_validation_modif_projet(id_element) {
+        const bouton_validation_Modif_Element = document.getElementById("bouton_validation_Modif_Element");
+
+        //Validation
+        bouton_validation_Modif_Element.addEventListener("click", async () => {
+            //Update des élément
+            await Modification_Projet.Fetch_Modif_element(id_element);
+
+            //Rechercher le nombre de liste dans BDD
+            const data_contenue_liste = await Modification_Projet.Fetch_Recherche_liste(id_element);
+
+            const NB_Liste = document.querySelectorAll("#zone_liste > div[class^='div_liste_']").length;
+
+            if (data_contenue_liste.length === NB_Liste) {
+                await Modification_Projet.Fetch_Update_Liste(data_contenue_liste);
+            }
+
+
+
+
+            //Si il y a plus de liste dans modif 
+            if (data_contenue_liste.length < NB_Liste) {
+                //faire poste des autre listes
+
+            }
+
+            //Si il y a moins de liste dans modif 
+            if (data_contenue_liste.length > NB_Liste) {
+                //faire delete
+
+            }
+
+            //Retirer la page 
+            document.getElementById("overlay_Modif_Element").style.display = "none";
+            verification_page = 0;
+            //location.reload();
+        });
+    },
+
+    async Fetch_Modif_element(id_element) {
+        const nom = document.getElementById("input_nom_Modif_Element").value;
+        const description = document.getElementById("input_mot_de_passe_Modif_Element").value;
+
+        await fetch("/Modif_element", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nom: nom,
+                description: description,
+                id: id_element
+            })
+        });
+    },
+
+    async Fetch_Recherche_liste(id_element) {
+
+        const res = await fetch("/Recherche_liste?id_element=" + id_element);
+
+        const data_contenue_liste = await res.json();
+
+        return data_contenue_liste;
+    },
+
+    async Fetch_Update_Liste(data_contenue_liste) {
+        // Récupérer la div correspondante
+        for (let i = 0; i < data_contenue_liste.length; i++) {
+
+            // Récupérer la div correspondante
+            const div = document.getElementsByClassName("div_liste_" + i)[0];
+
+            // Récupérer les inputs dynamiques
+            const inputTexte = div.querySelector(".Input_Liste_modif_" + i);
+            const checkbox = div.querySelector(".validation_" + i);
+
+            console.log("Div :", i);
+            console.log("Texte :", inputTexte.value);
+            console.log("Validation :", Boolean(Number(checkbox.checked)));
+
+            // Ici tu peux envoyer l’update au back
+            // await fetch("/Update_liste", {...})
+        }
+
     },
 
     Boutons_annulation_modif_projet() {
@@ -439,5 +564,18 @@ const Modification_Projet = {
             overlay_Modif_Element.style.display = "none";
             verification_page = 0;
         });
-    }
+    },
+
+    Bouton_Delete_liste_modif_projet() {
+        //Vertion IA
+        /*document.getElementById("zone_liste").addEventListener("click", function (event) {
+
+            if (event.target.className.startsWith("Bouton_Delete_liste_")) {
+
+                const div = event.target.closest(".div_liste");
+                div.remove();
+            }
+        });*/
+
+    },
 };

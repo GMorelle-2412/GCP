@@ -271,7 +271,7 @@ body::before {
 }
 
 @media (max-width : 1500px) {
-    .element{
+    .element {
         width: 75%;
     }
 }
@@ -745,7 +745,10 @@ body::before {
     scrollbar-color: var(--border) transparent;
 }
 
-#Modif_Element::-webkit-scrollbar       { width: 4px; }
+#Modif_Element::-webkit-scrollbar {
+    width: 4px;
+}
+
 #Modif_Element::-webkit-scrollbar-thumb {
     background: var(--border);
     border-radius: 4px;
@@ -797,11 +800,13 @@ body::before {
     color: var(--white);
     text-transform: none;
     letter-spacing: 0;
-    padding: 0.4rem 0.65rem 0.4rem 2rem; /* indent pour la checkbox */
+    padding: 0.4rem 0.65rem 0.4rem 2rem;
+    /* indent pour la checkbox */
     background: var(--black-mid);
     border: 1px solid var(--border);
     border-radius: 7px 7px 0 0;
-    margin-bottom: -1px; /* fusionne avec la checkbox en dessous */
+    margin-bottom: -1px;
+    /* fusionne avec la checkbox en dessous */
     transition: border-color 0.2s;
 }
 
@@ -817,7 +822,8 @@ body::before {
 
 /* "Modifier" = premier bouton */
 #Modif_Element button:nth-of-type(1) {
-    margin-top: 0.75rem;
+    margin-top: 0.38rem;
+    margin-bottom: 0.38rem;
     width: 100%;
     font-family: 'Syne', sans-serif;
     font-size: 0.88rem;
@@ -825,7 +831,7 @@ body::before {
     letter-spacing: 0.08em;
     text-transform: uppercase;
     cursor: pointer;
-    padding: 0.65rem 1.4rem;
+    padding: 0.5rem 0.5rem;
     background: var(--violet);
     color: #fff;
     border: 1px solid var(--violet);
@@ -895,19 +901,134 @@ body::before {
     transform: translateY(1px);
 }
 
-.div_liste{
+.div_liste {
     display: flex;
     flex-direction: row-reverse;
     justify-content: flex-end;
     margin-top: 10px;
     margin-bottom: 10px;
+    align-items: center
+
+
 }
 
-.div_liste input{
+.div_liste input {
     margin-right: 10px;
 }
 
 .div_liste p {
     text-align: start;
     width: 100%;
+}
+
+/* ─── Bouton "Résilier" (Suppression) ─── */
+.Bouton_Delete_liste_ {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0.35rem 0.75rem;
+    background: transparent;
+    color: var(--violet);
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.Bouton_Delete_liste_:hover {
+    border-color: var(--violet);
+    background: var(--violet-soft);
+    color: var(--white);
+}
+
+/* ─── Bouton "Ajouter" ─── */
+#bouton_liste_Modif_Element {
+    margin-top: 0.5rem;
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: var(--violet);
+    border: 1px dashed var(--border);
+    border-radius: 7px;
+    transition: all 0.2s ease;
+}
+
+#bouton_liste_Modif_Element:hover {
+    border-color: var(--violet);
+    background: var(--violet-soft);
+    color: var(--white);
+}
+
+/* ─── Bouton "Modifier" ─── */
+#bouton_validation_Modif_Element {
+    margin-top: 0.25rem;
+    width: 100%;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0.65rem 1.4rem;
+    background: var(--violet);
+    color: #fff;
+    border: 1px solid var(--violet);
+    border-radius: 8px;
+    box-shadow: 0 0 18px var(--violet-glow);
+    transition: all 0.2s ease;
+}
+
+#bouton_validation_Modif_Element:hover {
+    background: var(--violet-dim);
+    box-shadow: 0 0 28px rgba(145, 132, 238, 0.45);
+    transform: translateY(-1px);
+}
+
+/* ─── Bouton "Annulation" ─── */
+#bouton_annulation_Modif_Element {
+    width: 100%;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0.65rem 1.4rem;
+    background: transparent;
+    color: var(--white-dim);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+#bouton_annulation_Modif_Element:hover {
+    background: var(--violet-soft);
+    color: var(--white);
+    border-color: var(--violet);
+}
+
+
+.Bouton_Delete_liste_ {
+    width: fit-content !important;
+    background: transparent !important;
+    color: var(--violet) !important;
+    border: 1px dashed var(--border) !important;
+    box-shadow: none !important;
+}
+
+#bouton_liste_Modif_Element {
+    background: transparent !important;
+    color: var(--violet) !important;
+    border: 1px dashed var(--border) !important;
+    box-shadow: none !important;
 }
