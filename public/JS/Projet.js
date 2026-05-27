@@ -384,35 +384,37 @@ const Modification_Projet = {
 
     Generation_modif_projet_liste(data_element, projet, data_contenu, data_liste) {
         if (data_contenu[0].id_element === projet.id) {
+
             const zone_liste = document.getElementById("zone_liste");
 
             const div_liste = document.createElement("div");
-            div_liste.id = "div_liste_" + [Id_Liste];
             div_liste.className = "div_liste";
+            div_liste.dataset.id = data_liste.id;
 
             const validation_modif = document.createElement("input");
-            validation_modif.className = "validation_" + [Id_Liste];
-            validation_modif.checked = Boolean(Number(data_liste.validation));
             validation_modif.type = "checkbox";
+            validation_modif.className = "validation";
+            validation_modif.checked = Boolean(Number(data_liste.validation));
+            validation_modif.dataset.id = data_liste.id;
 
             const Input_Liste_modif = document.createElement("input");
             Input_Liste_modif.type = "text";
             Input_Liste_modif.value = data_liste.contenu;
-            Input_Liste_modif.className = "Input_Liste_modif_" + [Id_Liste];
-
+            Input_Liste_modif.className = "Input_Liste_modif";
+            Input_Liste_modif.dataset.id = data_liste.id;
 
             const Bouton_Delete_liste = document.createElement("button");
             Bouton_Delete_liste.textContent = "Résilier";
             Bouton_Delete_liste.className = "Bouton_Delete_liste";
-            Bouton_Delete_liste.id = Id_Liste;
-
-            Id_Liste++;
+            Bouton_Delete_liste.dataset.id = data_liste.id;
 
             div_liste.appendChild(Bouton_Delete_liste);
             div_liste.appendChild(Input_Liste_modif);
             div_liste.appendChild(validation_modif);
 
             zone_liste.appendChild(div_liste);
+
+            Id_Liste++;
         }
     },
 
@@ -480,31 +482,79 @@ const Modification_Projet = {
             //Rechercher le nombre de liste dans BDD
             const data_contenue_liste = await Modification_Projet.Fetch_Recherche_liste(id_element);
 
-            const NB_Liste = document.querySelectorAll("#zone_liste > div[class^='div_liste_']").length;
+            const NB_Liste = document.querySelectorAll(".div_liste").length;
 
             if (data_contenue_liste.length === NB_Liste) {
-                await Modification_Projet.Fetch_Update_Liste(data_contenue_liste);
+                Modification_Projet.Fetch_Update_Liste(data_contenue_liste.length);
             }
-
-
-
 
             //Si il y a plus de liste dans modif 
             if (data_contenue_liste.length < NB_Liste) {
-                //faire poste des autre listes
+
+                await Modification_Projet.Fetch_Update_Liste(data_contenue_liste.length);
+
+                const reste = NB_Liste - data_contenue_liste.length;
+
+                const lignes = document.querySelectorAll(".div_liste");
+                const id_user = localStorage.getItem("id_user");
+
+                const contenus = [];
+                const validations = [];
+
+                for (let i = 0; i < reste; i++) {
+
+                    const ligne = lignes[data_contenue_liste.length + i];
+
+                    const contenu = ligne.querySelector(".Input_Liste_modif");
+
+                    // ✔ On récupère la bonne checkbox selon la ligne
+                    let validation = ligne.querySelector(".validation");
+                    if (!validation) {
+                        validation = ligne.querySelector(".partie_list");
+                    }
+
+                    // ✔ Si toujours rien → on ignore cette ligne
+                    if (!contenu || !validation) {
+                        console.warn("Élément manquant dans la ligne :", ligne);
+                        continue;
+                    }
+
+                    contenus.push(contenu);
+                    validations.push({
+                        checked: Boolean(Number(validation.checked))
+                    });
+
+                }
+
+                await Creation_Projet.Fetch_Post_Liste(
+                    contenus,
+                    validations,
+                    id_user,
+                    id_element
+                );
 
             }
 
             //Si il y a moins de liste dans modif 
             if (data_contenue_liste.length > NB_Liste) {
-                //faire delete
 
+                await Modification_Projet.Fetch_Update_Liste(NB_Liste);
+
+                const reste = data_contenue_liste.length - NB_Liste;
+
+                for (let s = 0; s < reste; s++) {
+
+                    const index = NB_Liste + s; // index de la ligne à supprimer
+                    const id_liste = data_contenue_liste[index].id_liste;
+
+                    await Modification_Projet.Fetch_Delete_liste(id_liste);
+                }
             }
 
             //Retirer la page 
             document.getElementById("overlay_Modif_Element").style.display = "none";
             verification_page = 0;
-            //location.reload();
+            location.reload();
         });
     },
 
@@ -534,25 +584,52 @@ const Modification_Projet = {
         return data_contenue_liste;
     },
 
-    async Fetch_Update_Liste(data_contenue_liste) {
-        // Récupérer la div correspondante
-        for (let i = 0; i < data_contenue_liste.length; i++) {
+    async Fetch_Update_Liste(max) {
+        const lignes = document.querySelectorAll(".div_liste");
 
-            // Récupérer la div correspondante
-            const div = document.getElementsByClassName("div_liste_" + i)[0];
+        for (let j = 0; j < max; j++) {
 
-            // Récupérer les inputs dynamiques
-            const inputTexte = div.querySelector(".Input_Liste_modif_" + i);
-            const checkbox = div.querySelector(".validation_" + i);
+            const ligne = lignes[j];
 
-            console.log("Div :", i);
-            console.log("Texte :", inputTexte.value);
-            console.log("Validation :", Boolean(Number(checkbox.checked)));
+            const contenuInput = ligne.querySelector(".Input_Liste_modif");
+            const validationCheckbox = ligne.querySelector(".validation");
 
-            // Ici tu peux envoyer l’update au back
-            // await fetch("/Update_liste", {...})
+            const id = ligne.dataset.id;
+
+            const data = {
+                contenu: contenuInput.value,
+                validation: validationCheckbox.checked,
+                id: id
+            };
+
+            console.log("Données envoyées :", data);
+
+            await fetch("/Update_Liste", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
         }
 
+
+
+    },
+
+    async Fetch_Delete_liste(id_liste) {
+
+        await fetch("/delete_contenu_liste", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id_liste })
+        });
+
+        await fetch("/delete_liste", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id_liste })
+        });
     },
 
     Boutons_annulation_modif_projet() {
@@ -567,15 +644,21 @@ const Modification_Projet = {
     },
 
     Bouton_Delete_liste_modif_projet() {
-        //Vertion IA
-        /*document.getElementById("zone_liste").addEventListener("click", function (event) {
+        // On récupère la zone où il y a la liste
+        const zoneListe = document.getElementById("zone_liste");
 
-            if (event.target.className.startsWith("Bouton_Delete_liste_")) {
+        // On écoute les clics dans cette zone
+        zoneListe.addEventListener("click", function (event) {
 
-                const div = event.target.closest(".div_liste");
-                div.remove();
+            // Si ce qu'on a cliqué possède la classe "Bouton_Delete_liste"
+            if (event.target.classList.contains("Bouton_Delete_liste")) {
+
+                // On cherche l'élément parent qui représente l'élément de la liste
+                const element = event.target.closest(".div_liste");
+
+                // On supprime cet élément
+                element.remove();
             }
-        });*/
-
+        });
     },
 };

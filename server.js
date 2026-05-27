@@ -237,6 +237,28 @@ app.get("/Recherche_liste", (req, res) => {
     });
 });
 
+app.delete("/delete_contenu_liste",(req, res) => {
+    const id_liste = req.body.id_liste;
+
+    const sql = "DELETE FROM contenu_liste WHERE id_liste = ?";
+
+    db.query(sql, [id_liste], (err, result) => {
+        if (err) return res.status(500).send("Erreur serveur");
+        res.json(result);
+    });
+});
+
+app.delete("/delete_liste", (req, res) => {
+
+    const id = req.body.id;
+    
+    const sql = `DELETE FROM liste WHERE id = ?`;
+
+    db.query(sql, [id], (err, result) => {
+        if (err) return res.status(500).send("Erreur serveur");
+        res.json(result);
+    });
+});
 
 /* Lancement */
 app.listen(port, () => {
