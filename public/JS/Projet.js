@@ -371,13 +371,13 @@ const Modification_Projet_interface = {
 
                 Modification_Projet_interface.Generation_Boutons_modif_projet();
 
-                Modification_Projet_interface.Bouton_Delete_liste_modif_projet();
+                Modification_Projet.Bouton_Delete_liste_modif_projet();
 
-                Modification_Projet_interface.Bouton_Liste_Modif_Projet();
+                Modification_Projet.Bouton_Liste_Modif_Projet();
 
-                Modification_Projet_interface.Boutons_validation_modif_projet(data_element[0].id);
+                Modification_Projet.Boutons_validation_modif_projet(data_element[0].id);
 
-                Modification_Projet_interface.Boutons_annulation_modif_projet();
+                Modification_Projet.Boutons_annulation_modif_projet();
             }
         }
     },
