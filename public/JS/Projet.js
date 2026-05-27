@@ -62,7 +62,7 @@ const Creation_Projet = {
         //Annulation
         Annulation(bouton_annulation_Create_element, overlay_Create_element);
 
-        Bouton_Create_Element(bouton_validation_Create_element, bouton_creer_partie_list);
+        Creation_Projet.Bouton_Create_Element(bouton_validation_Create_element, bouton_creer_partie_list);
     },
 
     Bouton_Create_Element(bouton_validation, bouton_creer_partie_list) {
@@ -81,7 +81,7 @@ const Creation_Projet = {
         bouton_creer_partie_list.addEventListener("click", () => {
             const liste = document.createElement("div");
             liste.className = "liste";
-            zone_creer_partie_list.appendChild(liste);
+            const zone_creer_partie_list = document.getElementById("zone_creer_partie_list");
 
             const partie_list = document.createElement("input");
             partie_list.className = "partie_list";
@@ -114,8 +114,7 @@ const Creation_Projet = {
             // 🔥 Correction ici
             await Creation_Projet.Fetch_Post_Liste(contenus, validations, id_user, id_element);
 
-            overlay_Create_element.style.display = "none";
-            overlay_inscription.style.display = "none";
+            document.getElementById("overlay_Create_element").style.display = "none";
             verification_page = 0;
             location.reload();
 
@@ -340,7 +339,7 @@ const Modification_Projet_interface = {
             if (projet.id === data_element[0].id) {
 
                 const Modif_Element = document.getElementById("Modif_Element");
-                overlay_Modif_Element.appendChild(Modif_Element);
+                const overlay_Modif_Element = document.getElementById("overlay_Modif_Element");
                 Modif_Element.innerHTML = "";
 
                 //Nom

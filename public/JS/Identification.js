@@ -68,38 +68,28 @@ const Inscription = {
     },
 
     Bouton_Inscription(bouton_validation_inscription) {
-
-        bouton_validation_inscription.addEventListener("click", () => {
-
-            //Recherche des valeurs
+        bouton_validation_inscription.addEventListener("click", async () => { // async ici
             const nom = document.getElementById("input_nom_inscription").value;
             const mot_de_passe = document.getElementById("input_mot_de_passe_inscription").value;
 
-            //Inscription
-            Inscription.Fetch_Post_Inscription(nom, mot_de_passe);
-
-            //Auto connection après inscription
-            Connection.Fetch_Get_Connection(nom, mot_de_passe);
+            await Inscription.Fetch_Post_Inscription(nom, mot_de_passe); // on attend ✅
+            Connection.Fetch_Get_Connection(nom, mot_de_passe);           // puis on connecte
         });
-
     },
 
-    Fetch_Post_Inscription(nom, mot_de_passe) {
-        fetch("/Inscription", {
+    async Fetch_Post_Inscription(nom, mot_de_passe) {
+        const response = await fetch("/Inscription", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                nom: nom,
-                mot_de_passe: mot_de_passe,
-            })
-        })
-            .then(response => response.json())
+            body: JSON.stringify({ nom, mot_de_passe })
+        });
 
-            .then(result => {
-                overlay_inscription.style.display = "none";
-                verification_page = 0;
-            })
+        const result = await response.json();
 
+        document.getElementById("overlay_inscription").style.display = "none";
+        verification_page = 0;
+
+        return result; // on indique que c'est fini
     },
 };
 

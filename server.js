@@ -103,7 +103,7 @@ app.post("/Liste", (req, res) => {
 
 //Elément
 app.post("/Element", (req, res) => {
-    const { nom, description} = req.body;
+    const { nom, description } = req.body;
 
     // 1. Créer l’élément
     const sqlElement = "INSERT INTO element (nom, description) VALUES (?, ?)";
@@ -147,7 +147,7 @@ app.get('/Recup_Liste', (req, res) => {
 app.get("/Recup_contenu_liste", (req, res) => {
 
     const id_liste = req.query.id_liste;
-    
+
     const sql = `SELECT * FROM contenu_liste WHERE id_liste = ?`;
 
     db.query(sql, [id_liste], (err, result) => {
@@ -228,7 +228,7 @@ app.put('/Update_Liste', (req, res) => {
 app.get("/Recherche_liste", (req, res) => {
 
     const id_element = req.query.id_element;
-    
+
     const sql = `SELECT * FROM contenu_liste WHERE id_element = ?`;
 
     db.query(sql, [id_element], (err, result) => {
@@ -237,7 +237,7 @@ app.get("/Recherche_liste", (req, res) => {
     });
 });
 
-app.delete("/delete_contenu_liste",(req, res) => {
+app.delete("/delete_contenu_liste", (req, res) => {
     const id_liste = req.body.id_liste;
 
     const sql = "DELETE FROM contenu_liste WHERE id_liste = ?";
@@ -250,7 +250,7 @@ app.delete("/delete_contenu_liste",(req, res) => {
 
 app.delete("/delete_liste", (req, res) => {
 
-    const id = req.body.id;
+    const id = req.body.id_liste;
     
     const sql = `DELETE FROM liste WHERE id = ?`;
 
