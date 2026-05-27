@@ -226,7 +226,7 @@ const Affichage_Projets = {
         validation.checked = Boolean(Number(liste.validation));
         validation.type = "checkbox";
 
-        Modification_Projet.Modif_Check_List(validation, element, liste, contenu);
+        Modification_Projet_interface.Modif_Check_List(validation, element, liste, contenu);
 
         div_listes.appendChild(validation);
 
@@ -242,13 +242,13 @@ const Affichage_Projets = {
 
             div_element.appendChild(bouton_modif);
 
-            Modification_Projet.Bouton_Modif_Projet(bouton_modif, element[0]);
+            Modification_Projet_interface.Bouton_Modif_Projet(bouton_modif, element[0]);
         }
     },
 };
 
 let Id_Liste = 0;
-const Modification_Projet = {
+const Modification_Projet_interface = {
 
     Modif_Check_List(input, element, liste, contenu) {
         input.addEventListener("change", () => {
@@ -276,7 +276,7 @@ const Modification_Projet = {
 
     Bouton_Modif_Projet(bouton_modif, projet) {
         bouton_modif.addEventListener("click", () => {
-            Modification_Projet.Modif_Projet(projet);
+            Modification_Projet_interface.Modif_Projet(projet);
         })
     },
 
@@ -299,7 +299,7 @@ const Modification_Projet = {
             zIndex: "999"
         });
 
-        Modification_Projet.Recup_Liste(projet);
+        Modification_Projet_interface.Recup_Liste(projet);
     },
 
     async Recup_Liste(projet) {
@@ -308,7 +308,7 @@ const Modification_Projet = {
         const data_liste = await res.json();
 
         for (let i = 0; i < data_liste.length; i++) {
-            await Modification_Projet.Recup_contenu_liste(data_liste[i], projet);
+            await Modification_Projet_interface.Recup_contenu_liste(data_liste[i], projet);
         }
     },
 
@@ -317,7 +317,7 @@ const Modification_Projet = {
         const data_contenu = await res.json();
 
         for (let j = 0; j < data_contenu.length; j++) {
-            await Modification_Projet.Recup_Element(data_contenu[j].id_element, projet, data_contenu, data_liste);
+            await Modification_Projet_interface.Recup_Element(data_contenu[j].id_element, projet, data_contenu, data_liste);
         }
     },
 
@@ -326,12 +326,12 @@ const Modification_Projet = {
 
         const data_element = await res.json();
 
-        Modification_Projet.Affichage_modif_projet(data_element, projet, data_contenu, data_liste);
+        Modification_Projet_interface.Affichage_modif_projet(data_element, projet, data_contenu, data_liste);
     },
 
     Affichage_modif_projet(data_element, projet, data_contenu, data_liste) {
-        Modification_Projet.Generation_modif_projet_element(data_element, projet);
-        Modification_Projet.Generation_modif_projet_liste(data_element, projet, data_contenu, data_liste);
+        Modification_Projet_interface.Generation_modif_projet_element(data_element, projet);
+        Modification_Projet_interface.Generation_modif_projet_liste(data_element, projet, data_contenu, data_liste);
     },
 
     Generation_modif_projet_element(data_element, projet) {
@@ -369,15 +369,15 @@ const Modification_Projet = {
                 zone_liste.id = "zone_liste";
                 Modif_Element.appendChild(zone_liste);
 
-                Modification_Projet.Generation_Boutons_modif_projet();
+                Modification_Projet_interface.Generation_Boutons_modif_projet();
 
-                Modification_Projet.Bouton_Delete_liste_modif_projet();
+                Modification_Projet_interface.Bouton_Delete_liste_modif_projet();
 
-                Modification_Projet.Bouton_Liste_Modif_Projet();
+                Modification_Projet_interface.Bouton_Liste_Modif_Projet();
 
-                Modification_Projet.Boutons_validation_modif_projet(data_element[0].id);
+                Modification_Projet_interface.Boutons_validation_modif_projet(data_element[0].id);
 
-                Modification_Projet.Boutons_annulation_modif_projet();
+                Modification_Projet_interface.Boutons_annulation_modif_projet();
             }
         }
     },
@@ -438,6 +438,10 @@ const Modification_Projet = {
         document.getElementById("Modif_Element").appendChild(bouton_annulation_Modif_Element);
     },
 
+
+}
+
+const Modification_Projet = {
     Bouton_Liste_Modif_Projet() {
         const bouton_liste_Modif_Element = document.getElementById("bouton_liste_Modif_Element");
 
