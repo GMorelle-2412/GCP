@@ -1,3 +1,4 @@
+var nb_liste = 0;
 const Creation_Projet = {
     Generation_Create_Element() {
         if (verification_page == 1) return;
@@ -44,7 +45,7 @@ const Creation_Projet = {
         bouton_creer_partie_list.textContent = "Créer une partie";
         Create_element.appendChild(bouton_creer_partie_list);
 
-        //Zone de création d'une partie d'une list
+        ///Zone de création d'une partie d'une list
         const zone_creer_partie_list = document.createElement("div");
         zone_creer_partie_list.id = "zone_creer_partie_list";
         Create_element.appendChild(zone_creer_partie_list);
@@ -70,6 +71,8 @@ const Creation_Projet = {
         /*validation*/
         bouton_validation.addEventListener("click", () => {
 
+            if (nb_liste === 0) return alert("Vous devais créer au mininum un liste");
+
             const nom = document.getElementById("input_nom_Create_element").value;
             const description = document.getElementById("textarea_description_Create_element").value;
 
@@ -79,6 +82,8 @@ const Creation_Projet = {
 
         /*Créer une partie d'une list*/
         bouton_creer_partie_list.addEventListener("click", () => {
+            nb_liste++;
+
             const liste = document.createElement("div");
             liste.className = "liste";
             const zone_creer_partie_list = document.getElementById("zone_creer_partie_list");
@@ -93,6 +98,8 @@ const Creation_Projet = {
             text_partie_list.type = "text";
             text_partie_list.placeholder = "Nom de la partie";
             liste.appendChild(text_partie_list);
+
+            zone_creer_partie_list.appendChild(liste);
         });
     },
 
@@ -247,6 +254,7 @@ const Affichage_Projets = {
 };
 
 let Id_Liste = 0;
+const sauvegarde_ids = [];
 const Modification_Projet_interface = {
 
     Modif_Check_List(input, element, liste, contenu) {
@@ -307,30 +315,30 @@ const Modification_Projet_interface = {
         const data_liste = await res.json();
 
         for (let i = 0; i < data_liste.length; i++) {
-            await Modification_Projet_interface.Recup_contenu_liste(data_liste[i], projet);
+            await Modification_Projet_interface.Recup_contenu_liste(data_liste[i], projet, i);
         }
     },
 
-    async Recup_contenu_liste(data_liste, projet) {
+    async Recup_contenu_liste(data_liste, projet, i) {
         const res = await fetch("/Recup_contenu_liste?id_liste=" + data_liste.id);
         const data_contenu = await res.json();
 
         for (let j = 0; j < data_contenu.length; j++) {
-            await Modification_Projet_interface.Recup_Element(data_contenu[j].id_element, projet, data_contenu, data_liste);
+            await Modification_Projet_interface.Recup_Element(data_contenu[j].id_element, projet, data_contenu, data_liste, i);
         }
     },
 
-    async Recup_Element(id_element, projet, data_contenu, data_liste) {
+    async Recup_Element(id_element, projet, data_contenu, data_liste, i) {
         const res = await fetch("/Recup_Element?id_element=" + id_element);
 
         const data_element = await res.json();
 
-        Modification_Projet_interface.Affichage_modif_projet(data_element, projet, data_contenu, data_liste);
+        Modification_Projet_interface.Affichage_modif_projet(data_element, projet, data_contenu, data_liste, i);
     },
 
-    Affichage_modif_projet(data_element, projet, data_contenu, data_liste) {
+    Affichage_modif_projet(data_element, projet, data_contenu, data_liste, i) {
         Modification_Projet_interface.Generation_modif_projet_element(data_element, projet);
-        Modification_Projet_interface.Generation_modif_projet_liste(data_element, projet, data_contenu, data_liste);
+        Modification_Projet_interface.Generation_modif_projet_liste(data_element, projet, data_contenu, data_liste, i);
     },
 
     Generation_modif_projet_element(data_element, projet) {
@@ -381,7 +389,7 @@ const Modification_Projet_interface = {
         }
     },
 
-    Generation_modif_projet_liste(data_element, projet, data_contenu, data_liste) {
+    Generation_modif_projet_liste(data_element, projet, data_contenu, data_liste, i) {
         if (data_contenu[0].id_element === projet.id) {
 
             const zone_liste = document.getElementById("zone_liste");
@@ -412,6 +420,8 @@ const Modification_Projet_interface = {
             div_liste.appendChild(validation_modif);
 
             zone_liste.appendChild(div_liste);
+
+            sauvegarde_ids[Id_Liste] = data_liste.id;
 
             Id_Liste++;
         }
@@ -488,67 +498,49 @@ const Modification_Projet = {
             const NB_Liste = document.querySelectorAll(".div_liste").length;
 
             if (data_contenue_liste.length === NB_Liste) {
-                Modification_Projet.Fetch_Update_Liste(data_contenue_liste.length);
+                Modification_Projet.Fetch_Update_Liste(data_contenue_liste.length, sauvegarde_ids);
             }
 
             //Si il y a plus de liste dans modif 
             if (data_contenue_liste.length < NB_Liste) {
 
-                await Modification_Projet.Fetch_Update_Liste(data_contenue_liste.length);
-
                 const reste = NB_Liste - data_contenue_liste.length;
 
-                const lignes = document.querySelectorAll(".div_liste");
+                await Modification_Projet.Fetch_Update_Liste(data_contenue_liste.length, sauvegarde_ids);
+
                 const id_user = localStorage.getItem("id_user");
 
+                const lignes = document.querySelectorAll(".div_liste");
+                const data_contenue_liste_length = data_contenue_liste.length;
                 const contenus = [];
                 const validations = [];
 
-                for (let i = 0; i < reste; i++) {
 
-                    const ligne = lignes[data_contenue_liste.length + i];
+                for (let m = 0; m < reste; m++) {
 
-                    const contenu = ligne.querySelector(".Input_Liste_modif");
+                    const ligne = lignes[data_contenue_liste_length + m];
 
-                    // ✔ On récupère la bonne checkbox selon la ligne
-                    let validation = ligne.querySelector(".validation");
-                    if (!validation) {
-                        validation = ligne.querySelector(".partie_list");
-                    }
+                    const contenuInput = ligne.querySelector(".Input_Liste_modif");
+                    const validationCheckbox = ligne.querySelector(".partie_list");
 
-                    // ✔ Si toujours rien → on ignore cette ligne
-                    if (!contenu || !validation) {
-                        console.warn("Élément manquant dans la ligne :", ligne);
-                        continue;
-                    }
-
-                    contenus.push(contenu);
-                    validations.push({
-                        checked: Boolean(Number(validation.checked))
-                    });
-
+                    contenus[m] = contenuInput;
+                    validations[m] = validationCheckbox;
                 }
 
-                await Creation_Projet.Fetch_Post_Liste(
-                    contenus,
-                    validations,
-                    id_user,
-                    id_element
-                );
 
+                await Creation_Projet.Fetch_Post_Liste(contenus, validations, id_user, id_element);
             }
 
             //Si il y a moins de liste dans modif 
             if (data_contenue_liste.length > NB_Liste) {
 
-                await Modification_Projet.Fetch_Update_Liste(NB_Liste);
+                await Modification_Projet.Fetch_Update_Liste(NB_Liste, sauvegarde_ids);
 
                 const reste = data_contenue_liste.length - NB_Liste;
 
                 for (let s = 0; s < reste; s++) {
 
-                    const index = NB_Liste + s; // index de la ligne à supprimer
-                    const id_liste = data_contenue_liste[index].id_liste;
+                    const id_liste = data_contenue_liste[NB_Liste + s].id_liste;
 
                     await Modification_Projet.Fetch_Delete_liste(id_liste);
                 }
@@ -557,7 +549,7 @@ const Modification_Projet = {
             //Retirer la page 
             document.getElementById("overlay_Modif_Element").style.display = "none";
             verification_page = 0;
-            location.reload();
+            await location.reload();
         });
     },
 
@@ -587,7 +579,7 @@ const Modification_Projet = {
         return data_contenue_liste;
     },
 
-    async Fetch_Update_Liste(max) {
+    async Fetch_Update_Liste(max, sauvegarde_ids) {
         const lignes = document.querySelectorAll(".div_liste");
 
         for (let j = 0; j < max; j++) {
@@ -595,9 +587,9 @@ const Modification_Projet = {
             const ligne = lignes[j];
 
             const contenuInput = ligne.querySelector(".Input_Liste_modif");
-            const validationCheckbox = ligne.querySelector(".validation");
+            const validationCheckbox = ligne.querySelector(".partie_list");
 
-            const id = ligne.dataset.id;
+            const id = sauvegarde_ids[j];
 
             const data = {
                 contenu: contenuInput.value,
@@ -615,9 +607,6 @@ const Modification_Projet = {
                 body: JSON.stringify(data)
             });
         }
-
-
-
     },
 
     async Fetch_Delete_liste(id_liste) {
