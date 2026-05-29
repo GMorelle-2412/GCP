@@ -615,12 +615,19 @@ const Modification_Projet = {
         });
     },
 
-    Bouton_Sup_Element(id_element, data_liste){
+    Bouton_Sup_Element(id_element, data_liste) {
         const bouton_Sup_Element = document.getElementById("bouton_Sup_Element");
 
         bouton_Sup_Element.addEventListener("click", async () => {
 
-            await Modification_Projet.Fetch_Delete_liste(data_liste.id);
+            const all_contenue_liste = await Modification_Projet.Fetch_Recherche_liste(id_element);
+            const NB_Listes = document.querySelectorAll(".div_liste").length;
+
+            for (let s = 0; s < NB_Listes.length; s++) {
+                const id_liste = all_contenue_liste[s].id_liste;
+
+                await Modification_Projet.Fetch_Delete_liste(id_liste);
+            }
 
             await Modification_Projet.Fetch_Delete_Element(id_element);
 
@@ -628,11 +635,11 @@ const Modification_Projet = {
         });
     },
 
-    async Fetch_Delete_Element(id_element){
+    async Fetch_Delete_Element(id_element) {
         await fetch("/delete_element", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id_element : id_element })
+            body: JSON.stringify({ id_element: id_element })
         });
     }
 };
