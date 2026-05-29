@@ -20,6 +20,8 @@ function Generation_Démarage() {
 
         nom_user.textContent = "Utilisateur non connecté";
 
+        document.getElementById("Create_element").style.display = "none";
+
         const bouton_connection = document.createElement("button");
         bouton_connection.id = "Bouton_Connection";
         bouton_connection.textContent = "Connection";
@@ -32,7 +34,6 @@ function Generation_Démarage() {
 
         Connection.Bouton_Page_Connection(bouton_connection);
         Inscription.Bouton_Page_Inscription(bouton_inscription);
-
 
     } else {
         Déconnection.Generation_Déconection();

@@ -31,7 +31,7 @@ const Inscription = {
 
         inscription.innerHTML = "";
 
-        // Nom
+        //Nom
         const text_nom_inscription = document.createElement("p");
         text_nom_inscription.textContent = "Nom";
         inscription.appendChild(text_nom_inscription);
@@ -68,12 +68,12 @@ const Inscription = {
     },
 
     Bouton_Inscription(bouton_validation_inscription) {
-        bouton_validation_inscription.addEventListener("click", async () => { // async ici
+        bouton_validation_inscription.addEventListener("click", async () => { 
             const nom = document.getElementById("input_nom_inscription").value;
             const mot_de_passe = document.getElementById("input_mot_de_passe_inscription").value;
 
-            await Inscription.Fetch_Post_Inscription(nom, mot_de_passe); // on attend ✅
-            Connection.Fetch_Get_Connection(nom, mot_de_passe);           // puis on connecte
+            await Inscription.Fetch_Post_Inscription(nom, mot_de_passe); 
+            Connection.Fetch_Get_Connection(nom, mot_de_passe);           
         });
     },
 
@@ -89,7 +89,7 @@ const Inscription = {
         document.getElementById("overlay_inscription").style.display = "none";
         verification_page = 0;
 
-        return result; // on indique que c'est fini
+        return result; 
     },
 };
 
@@ -126,7 +126,7 @@ const Connection = {
         const connection = document.getElementById("connection");
         connection.innerHTML = "";
 
-        // NOM
+        //Nom
         const text_nom_connection = document.createElement("p");
         text_nom_connection.textContent = "Nom";
         connection.appendChild(text_nom_connection);
@@ -184,7 +184,7 @@ const Connection = {
                 if (data.length > 0) {
                     overlay_connection.style.display = "none";
                     verification_page = 0;
-                    localStorage.setItem("id_user", data[0].id); // Stockage de l'id de l'utilisateur dans le localStorage
+                    localStorage.setItem("id_user", data[0].id);
                     location.reload();
 
                 } else {
@@ -201,7 +201,7 @@ const Connection = {
     },
 
     Fetch_Get_Auto_Connection(id_user, nom_user) {
-        fetch("/auto_connection?id_user=" + id_user, {
+        fetch("/connection?id_user=" + id_user, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
         })
