@@ -238,6 +238,20 @@ app.delete("/delete_liste", async (req, res) => {
     }
 });
 
+app.delete("/delete_element", async (req, res) => {
+    const {id_element} = req.body;
+
+    try {
+        const [resultat] = await db.query("DELETE FROM element WHERE id = ?", [id_element]);
+
+        res.json(resultat);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Erreur serveur");
+    }
+});
+
 /* Lancement */
 app.listen(port, () => {
     const Ip = ip.address();

@@ -1,4 +1,7 @@
 var nb_liste = 0;
+let Id_Liste = 0;
+const sauvegarde_ids = [];
+
 const Creation_Projet = {
     Generation_Create_Element() {
         if (verification_page == 1) return;
@@ -247,8 +250,6 @@ const Affichage_Projets = {
     },
 };
 
-let Id_Liste = 0;
-const sauvegarde_ids = [];
 const Modification_Projet_interface = {
 
     Modif_Check_List(input, element, liste, contenu) {
@@ -592,6 +593,11 @@ const Modification_Projet = {
         const zoneListe = document.getElementById("zone_liste");
 
         zoneListe.addEventListener("click", function (event) {
+
+            const all_liste = document.querySelector("#zone_liste").children.length;
+
+            if (all_liste === 1)return alert("Votre élément doit avoir au minimum une liste");
+
             if (event.target.classList.contains("Bouton_Delete_liste")) {
                 const element = event.target.closest(".div_liste");
                 element.remove();
