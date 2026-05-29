@@ -332,11 +332,11 @@ const Modification_Projet_interface = {
     },
 
     Affichage_modif_projet(data_element, projet, data_contenu, data_liste, i) {
-        Modification_Projet_interface.Generation_modif_projet_element(data_element, projet);
+        Modification_Projet_interface.Generation_modif_projet_element(data_element, projet, data_liste);
         Modification_Projet_interface.Generation_modif_projet_liste(data_element, projet, data_contenu, data_liste, i);
     },
 
-    Generation_modif_projet_element(data_element, projet) {
+    Generation_modif_projet_element(data_element, projet, data_liste) {
         if (!document.getElementById("bouton_annulation_Modif_Element") && !document.getElementById("bouton_validation_Modif_Element")) {
 
             if (projet.id === data_element[0].id) {
@@ -379,6 +379,8 @@ const Modification_Projet_interface = {
                 Modification_Projet.Boutons_validation_modif_projet(data_element[0].id);
 
                 Modification_Projet.Boutons_annulation_modif_projet();
+
+                Modification_Projet.Bouton_Sup_Element(data_element[0].id, data_liste);
             }
         }
     },
@@ -440,6 +442,14 @@ const Modification_Projet_interface = {
         bouton_annulation_Modif_Element.textContent = "Annulation";
         bouton_annulation_Modif_Element.id = "bouton_annulation_Modif_Element";
         Modif_Element.appendChild(bouton_annulation_Modif_Element);
+
+        //Bouton sup élement
+        const bouton_Sup_Element = document.createElement("button");
+        bouton_Sup_Element.textContent = "Supprimer l'élément";
+        bouton_Sup_Element.id = "bouton_Sup_Element";
+        Modif_Element.appendChild(bouton_Sup_Element);
+
+
     },
 
 }
@@ -596,7 +606,7 @@ const Modification_Projet = {
 
             const all_liste = document.querySelector("#zone_liste").children.length;
 
-            if (all_liste === 1)return alert("Votre élément doit avoir au minimum une liste");
+            if (all_liste === 1) return alert("Votre élément doit avoir au minimum une liste");
 
             if (event.target.classList.contains("Bouton_Delete_liste")) {
                 const element = event.target.closest(".div_liste");
@@ -604,4 +614,25 @@ const Modification_Projet = {
             }
         });
     },
+
+    Bouton_Sup_Element(id_element, data_liste){
+        const bouton_Sup_Element = document.getElementById("bouton_Sup_Element");
+
+        bouton_Sup_Element.addEventListener("click", async () => {
+
+            await Modification_Projet.Fetch_Delete_liste(data_liste.id);
+
+            await Modification_Projet.Fetch_Delete_Element(id_element);
+
+            location.reload();
+        });
+    },
+
+    async Fetch_Delete_Element(id_element){
+        await fetch("/delete_element", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id_element : id_element })
+        });
+    }
 };
