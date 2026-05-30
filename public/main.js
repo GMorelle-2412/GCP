@@ -36,6 +36,8 @@ function Generation_Démarage() {
         Inscription.Bouton_Page_Inscription(bouton_inscription);
 
     } else {
+        Modification_User.Generation_Bouton_Modif_user();
+
         Déconnection.Generation_Déconection();
 
         Connection.Fetch_Get_Auto_Connection(id_user, nom_user);

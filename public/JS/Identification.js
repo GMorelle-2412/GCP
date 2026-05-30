@@ -68,12 +68,12 @@ const Inscription = {
     },
 
     Bouton_Inscription(bouton_validation_inscription) {
-        bouton_validation_inscription.addEventListener("click", async () => { 
+        bouton_validation_inscription.addEventListener("click", async () => {
             const nom = document.getElementById("input_nom_inscription").value;
             const mot_de_passe = document.getElementById("input_mot_de_passe_inscription").value;
 
-            await Inscription.Fetch_Post_Inscription(nom, mot_de_passe); 
-            Connection.Fetch_Get_Connection(nom, mot_de_passe);           
+            await Inscription.Fetch_Post_Inscription(nom, mot_de_passe);
+            Connection.Fetch_Get_Connection(nom, mot_de_passe);
         });
     },
 
@@ -89,7 +89,7 @@ const Inscription = {
         document.getElementById("overlay_inscription").style.display = "none";
         verification_page = 0;
 
-        return result; 
+        return result;
     },
 };
 
@@ -240,7 +240,6 @@ const Déconnection = {
         bouton_déconection.textContent = "Déconnexion";
 
         if (localStorage.getItem("id_user") > 0) {
-            remplacement.textContent = "";
             remplacement.appendChild(bouton_déconection);
         }
 
@@ -254,4 +253,84 @@ const Déconnection = {
             location.reload();
         });
     },
+};
+
+const Modification_User = {
+    Generation_Bouton_Modif_user() {
+        const zone_bouton = document.getElementById("CetI");
+
+        const bouton_modif_user = document.createElement("button");
+        bouton_modif_user.id = "bouton_modif_user";
+        bouton_modif_user.textContent = "bouton_modif_user";
+
+        zone_bouton.appendChild(bouton_modif_user);
+
+        Modification_User.bouton_modif_user(bouton_modif_user);
+    },
+
+    bouton_modif_user(bouton_modif_user) {
+        bouton_modif_user.addEventListener("click", () => {
+            Modification_User.Generation_Modif_user();
+        });
+    },
+
+    Generation_Modif_user(){
+        if (verification_page == 1) return;
+
+        verification_page = 1;
+
+        /* Arrière-plan */
+        const overlay_modif_user = document.getElementById("overlay_modif_user");
+
+        Object.assign(overlay_modif_user.style, {
+            position: "fixed",
+            inset: "0",
+            backdropFilter: "blur(8px)",
+            background: "rgba(0, 0, 0, 0.3)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: "999"
+        });
+
+        const modif_user = document.createElement("modif_user");
+        modif_user.id = "modif_user";
+        overlay_modif_user.appendChild(modif_user);
+
+        modif_user.innerHTML = "";
+
+        //Nom
+        const text_nom_modif_user = document.createElement("p");
+        text_nom_modif_user.textContent = "Nom";
+        modif_user.appendChild(text_nom_modif_user);
+
+        const input_nom_modif_user = document.createElement("input");
+        input_nom_modif_user.type = "text";
+        input_nom_modif_user.id = "input_nom_modif_user";
+        modif_user.appendChild(input_nom_modif_user);
+
+        //Mot de passe
+        const text_mot_de_passe_modif_user = document.createElement("p");
+        text_mot_de_passe_modif_user.textContent = "Mot de passe";
+        modif_user.appendChild(text_mot_de_passe_modif_user);
+
+        const input_mot_de_passe_modif_user = document.createElement("input");
+        input_mot_de_passe_modif_user.type = "password"; // ✔ correction importante
+        input_mot_de_passe_modif_user.id = "input_mot_de_passe_modif_user";
+        modif_user.appendChild(input_mot_de_passe_modif_user);
+
+        //Bouton put
+        const bouton_put_modif_user = document.createElement("button");
+        bouton_put_modif_user.textContent = "Modifier";
+        modif_user.appendChild(bouton_put_modif_user);
+
+        //Bouton annulation
+        const bouton_annulation_modif_user = document.createElement("button");
+        bouton_annulation_modif_user.textContent = "Annulation";
+        modif_user.appendChild(bouton_annulation_modif_user);
+
+        //Connection.Bouton_Connection(bouton_validation_connection);
+
+        //Annulation(bouton_annulation_connection, overlay_connection);
+    }
 };
